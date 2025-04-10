@@ -6,6 +6,7 @@ import 'package:ticket_app/data/model/company.dart';
 import 'package:ticket_app/data/model/customer.dart';
 import 'package:ticket_app/data/model/customer_address.dart';
 import 'package:ticket_app/data/model/day.dart';
+import 'package:ticket_app/data/model/message.dart';
 import 'package:ticket_app/data/model/odata_reponse.dart';
 import 'package:ticket_app/data/model/payment_method.dart';
 import 'package:ticket_app/data/model/schedule.dart';
@@ -172,7 +173,7 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<Customer?> createCustomer(Customer customer) async {
+  Future<CreateUserRequest?> createCustomer(CreateUserRequest customer) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/api/odata/Customer'),
       headers: {
@@ -184,10 +185,77 @@ class ApiService extends GetxService {
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      return Customer.fromJson(jsonResponse);
+      return CreateUserRequest.fromJson(jsonResponse);
     } else {
       throw Exception(
           'Error al crear cliente: ${response.statusCode} - ${response.body}');
+    }
+  }
+
+    Future<Message?> getCode(String username) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/CustomEndpointCodigoValidacion'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+      body: jsonEncode([
+        {
+          "userName": username,
+        }
+      ]),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+     return List<Message>.from(jsonResponse).first;
+    } else {
+      throw Exception(
+          'Error al crear cliente: ${response.statusCode} - ${response.body}');
+    }
+  }
+    Future<bool?> validateEmail(String email) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/CustomEndpointEmailValidacion'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+      body: jsonEncode([
+        {
+          "email": email,
+        }
+      ]),);
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+    return List<EmailMessage>.from(jsonResponse).first.message?.isNotEmpty??false;
+    } else {
+      throw Exception(
+          'Error al crear cliente: ${response.statusCode} - ${response.body}');
+    }
+  }
+    Future<bool?> changePassword(String userName,String password) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/CustomEndpointCambioPassword'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+      body: jsonEncode([
+        {
+          "userName": userName,
+          "password": password
+        }
+      ]),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return List<Message>.from(jsonResponse).first.message?.isNotEmpty??false;
+    } else {
+      throw Exception(
+          'Error change pssword ${response.statusCode} - ${response.body}');
     }
   }
 }

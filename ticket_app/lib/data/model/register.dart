@@ -14,11 +14,10 @@ class UserRegister {
   String? state;
   String? town;
   String? zipCode;
-
   String? middleName;
 
- static Customer mapUserRegisterToCustomer(UserRegister userRegister) {
-    return Customer(
+ static CreateUserRequest mapUserRegisterToCustomer(UserRegister userRegister) {
+    return CreateUserRequest(
       firstName: userRegister.firsName,
       middleName: userRegister.middleName,
       lastName: userRegister.lastName,
