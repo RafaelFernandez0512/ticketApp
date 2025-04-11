@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
-import 'package:navbar_router/navbar_router.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/controller/login_controller.dart';
 import 'package:ticket_app/routes/app_pages.dart';

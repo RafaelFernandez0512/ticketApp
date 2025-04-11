@@ -5,6 +5,7 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/controller/sign_up_controller.dart';
+import 'package:ticket_app/ui/Authentication/verification_code.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/ui/Authentication/components/sign_up_form.dart';
 import 'package:ticket_app/utils/gaps.dart';
@@ -66,7 +67,7 @@ class SignUpPage extends GetView<SignUpController> {
                                     await controller.nextStep(),
                                 label: controller.activeStep.value == 1
                                     ? 'Register'
-                                    : 'Next',
+                                    : 'Continue',
                                 icon: const Icon(
                                   Icons.arrow_forward,
                                   color: Colors.white,
@@ -118,7 +119,14 @@ class SignUpPage extends GetView<SignUpController> {
             gapH20,
           ],
         );
-      case 1:
+         case 1:
+        return Column(
+          children: [
+            VerificationCode(),
+            gapH20,
+          ],
+        );
+      case 2:
         return Column(
           children: [
             gapH20,

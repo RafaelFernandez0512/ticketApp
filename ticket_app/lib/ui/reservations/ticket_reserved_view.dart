@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:navbar_router/navbar_router.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/ui/widgets/LayoutBuilderWidget.dart';
