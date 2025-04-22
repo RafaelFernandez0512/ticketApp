@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/settings_controller.dart';
+import 'package:ticket_app/custom_theme.dart';
 
 class SettingsPage extends StatelessWidget {
   final SettingsController controller = Get.find<SettingsController>();
@@ -24,11 +25,13 @@ class SettingsPage extends StatelessWidget {
               children: [
                 // Foto de perfil circular
                 CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(
-                    'https://via.placeholder.com/150', // URL de la foto de perfil
-                  ),
-                ),
+                    radius: 50,
+                    backgroundColor: CustomTheme.primaryLightColor,
+                    child: Icon(
+                      Icons.person,
+                      size: 50,
+                      color: CustomTheme.white,
+                    )),
                 const SizedBox(height: 16),
                 Text(
                   'John Doe', // Nombre del usuario
@@ -63,7 +66,7 @@ class SettingsPage extends StatelessWidget {
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.credit_card),
-                  title: const Text('Credit Cards'),
+                  title: const Text('Customer Address'),
                   onTap: () {
                     // Navegar a la pantalla de tarjetas de crédito
                     Get.toNamed('/credit-cards');
@@ -71,8 +74,16 @@ class SettingsPage extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
-                  leading: const Icon(Icons.logout),
+                  leading: const Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                  ),
                   title: const Text('Log Out'),
+                  textColor: Colors.red,
+                  titleTextStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: Colors.red, fontWeight: FontWeight.w700),
                   onTap: () {
                     // Lógica para cerrar sesión
                     Get.dialog(

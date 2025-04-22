@@ -14,9 +14,11 @@ class UserRegister {
   String? state;
   String? town;
   String? zipCode;
+  DateTime? birthday;
   String? middleName;
 
- static CreateUserRequest mapUserRegisterToCustomer(UserRegister userRegister) {
+  static CreateUserRequest mapUserRegisterToCustomer(
+      UserRegister userRegister) {
     return CreateUserRequest(
       firstName: userRegister.firsName,
       middleName: userRegister.middleName,
@@ -24,12 +26,17 @@ class UserRegister {
       email: userRegister.email,
       phoneNumber: userRegister.phoneNumber,
       mobile: userRegister.phoneNumber,
-      birthday: null,
+      birthday: userRegister.birthday,
       addressLine1: userRegister.addressLine1,
       addressLine2: userRegister.addressLine2,
       zipCode: userRegister.zipCode,
       emergencyContact: userRegister.phoneNumber,
       contactPhoneNumber: userRegister.phoneNumber,
+      confirmPassword: userRegister.confirmPassword,
+      password: userRegister.password,
+      creadoDesdeMovil: true,
+      creationDate: DateTime.now(),
+      
     );
   }
 }

@@ -4,21 +4,21 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:sizer/sizer.dart';
-import 'package:ticket_app/controller/sign_up_controller.dart';
+import 'package:ticket_app/controller/forgot_password_controller.dart';
 import 'package:ticket_app/ui/Authentication/verification_code.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
-import 'package:ticket_app/ui/Authentication/components/sign_up_form.dart';
+import 'package:ticket_app/ui/widgets/custom_text_field.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/notification_type.dart';
 
-class SignUpPage extends GetView<SignUpController> {
-  const SignUpPage({super.key});
+class ForgotPasswordPage extends GetView<ForgotPasswordController> {
+  const ForgotPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text('Forgot Password'),
         centerTitle: true,
         leading: BackButton(
           color: Colors.white,
@@ -27,11 +27,12 @@ class SignUpPage extends GetView<SignUpController> {
           },
         ),
       ),
-      body: SafeArea(child: GetBuilder<SignUpController>(builder: (_) {
+      body: SafeArea(child: GetBuilder<ForgotPasswordController>(builder: (_) {
         return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: controller.obx((state) {
+            child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: controller.obx(
+            (state) {
               return Obx(() => Column(
                     children: [
                       gapH12,
@@ -47,7 +48,7 @@ class SignUpPage extends GetView<SignUpController> {
                                 EasyStep(
                                   customStep:
                                       Icon(Icons.person, color: Colors.red),
-                                  title: 'Information',
+                                  title: 'Email',
                                 ),
                                 EasyStep(
                                   customStep:
@@ -57,11 +58,10 @@ class SignUpPage extends GetView<SignUpController> {
                                 EasyStep(
                                   customStep:
                                       Icon(Icons.directions, color: Colors.red),
-                                  title: 'Address',
+                                  title: 'Change Password',
                                 ),
                               ]),
                           _buildStepContent(controller.activeStep.value),
-                          gapH16,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -85,7 +85,7 @@ class SignUpPage extends GetView<SignUpController> {
                                 onPressed: () async =>
                                     await controller.nextStep(),
                                 label: controller.activeStep.value == 2
-                                    ? 'Register'
+                                    ? 'Confirm'
                                     : 'Continue',
                                 icon: const Icon(
                                   Icons.arrow_forward,
@@ -99,32 +99,8 @@ class SignUpPage extends GetView<SignUpController> {
                     ],
                   ));
             },
-                onLoading: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        child: Image.asset('assets/logodoortodoor.png'),
-                        height: 60.sp,
-                      ),
-                      gapH20,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(),
-                          gapW16,
-                          Text(
-                            'Loading...',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                )),
           ),
-        );
+        ));
       })),
     );
   }
@@ -134,17 +110,21 @@ class SignUpPage extends GetView<SignUpController> {
       case 0:
         return Column(
           children: [
-            RegisterClientForm(controller: controller),
-            gapH20,
+            CustomTextField(
+              labelText: 'Email',
+              initialValue: controller.forgotPasswordModel.value.email,
+              onChanged: (text) => {controller.onChangeEmail(text)},
+            ),
+            gapH30
           ],
         );
       case 1:
         return Column(
           children: [
             VerificationCode(
-              username: controller.userRegister.value.email ?? '',
-              onCompleted: (s) => controller.verifyCode(s),
-              verificationCode: controller.verificationCode.value,
+              username: controller.forgotPasswordModel.value.email!,
+              onCompleted: (s) => controller.onChangeCode(s),
+              verificationCode: controller.verificationCode,
               resendCode: () async {
                 await controller.sendCode();
               },
@@ -152,18 +132,21 @@ class SignUpPage extends GetView<SignUpController> {
             gapH30
           ],
         );
+
       case 2:
         return Column(
           children: [
             gapH20,
-            RegisterAddressForm(
-              onChangedAddressLine1: controller.onChangeAddressLine1,
-              onChangedAddressLine2: controller.onChangeAddressLine2,
-              onChangedState: controller.onChangeState,
-              onChangedTown: controller.onChangeTown,
-              onChangedZipCode: controller.onChangeZipCode,
+            CustomTextField(
+              labelText: 'Password',
+              onChanged: (text) => {controller.onChangeEmail(text)},
             ),
             gapH20,
+            CustomTextField(
+              labelText: 'Confirm Password',
+              onChanged: (text) => {controller.onChangeEmail(text)},
+            ),
+            gapH30,
           ],
         );
       default:

@@ -13,6 +13,7 @@ import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/travel.dart';
+import 'package:ticket_app/data/model/zipcode.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
 
@@ -25,7 +26,12 @@ class ApiService extends GetxService {
 
   Future<String> getToken() async {
     var session = sessionService.getSession();
-    if (session == null || session.isSessionTemporalExpired()) {
+    if (session == null ||
+        (session.isSessionTemporalExpired() && session.isSessionExpired())) {
+      if (session?.expirationDate != null) {
+        return await authService.authenticate(
+            session?.username ?? '', session?.password ?? '');
+      }
       return await authService.temporalToken();
     }
     return session.token ?? session.refreshToken ?? '';
@@ -92,7 +98,7 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<List<Town>> getTown() async {
+  Future<List<Town>> getTowns() async {
     final response = await http.get(
       Uri.parse('$_baseUrl/api/odata/Town'),
       headers: {'Authorization': 'Bearer ${await getToken()}'},
@@ -106,7 +112,20 @@ class ApiService extends GetxService {
       throw Exception('Error al obtener town: ${response.statusCode}');
     }
   }
+  Future<List<Town>> getTown(String idTown) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/odata/Town'),
+      headers: {'Authorization': 'Bearer ${await getToken()}'},
+    );
 
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ODataResponse<Town>.fromJson(
+          jsonResponse, (json) => Town.fromJson(json)).value;
+    } else {
+      throw Exception('Error al obtener town: ${response.statusCode}');
+    }
+  }
   Future<List<Travel>> getTravel() async {
     const queryParams =
         r"$expand=StateFrom,StateTo,Employee($select=FullName),Vehicle";
@@ -192,7 +211,7 @@ class ApiService extends GetxService {
     }
   }
 
-    Future<Message?> getCode(String username) async {
+  Future<Message?> getCode(String username) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/api/CustomEndpointCodigoValidacion'),
       headers: {
@@ -208,54 +227,101 @@ class ApiService extends GetxService {
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-     return List<Message>.from(jsonResponse).first;
+      return List<Message>.from(jsonResponse).first;
     } else {
       throw Exception(
           'Error al crear cliente: ${response.statusCode} - ${response.body}');
     }
   }
-    Future<bool?> validateEmail(String email) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/api/CustomEndpointEmailValidacion'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${await getToken()}',
-      },
-      body: jsonEncode([
-        {
-          "email": email,
-        }
-      ]),);
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-    return List<EmailMessage>.from(jsonResponse).first.message?.isNotEmpty??false;
-    } else {
-      throw Exception(
-          'Error al crear cliente: ${response.statusCode} - ${response.body}');
-    }
-  }
-    Future<bool?> changePassword(String userName,String password) async {
+  Future<bool?> validateEmail(String email) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/api/CustomEndpointCambioPassword'),
+      Uri.parse('$_baseUrl/api/CustomEndpointEmailValidacion?username=$email'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${await getToken()}',
       },
-      body: jsonEncode([
-        {
-          "userName": userName,
-          "password": password
-        }
-      ]),
     );
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      return List<Message>.from(jsonResponse).first.message?.isNotEmpty??false;
+      if (jsonResponse is List) {
+        final emailMessages = jsonResponse
+            .map((e) => EmailMessage.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        return emailMessages.isNotEmpty &&
+            emailMessages.first.message?.isNotEmpty == true;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool?> changePassword(String userName, String password) async {
+    final response = await http.post(
+      Uri.parse(
+          '$_baseUrl/api/CustomEndpointCambioPassword?Username=$userName&Password=$password'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return List<Message>.from(jsonResponse).first.message?.isNotEmpty ??
+          false;
     } else {
       throw Exception(
           'Error change pssword ${response.statusCode} - ${response.body}');
     }
   }
+
+  Future<String?> sendCode(String username) async {
+    final response = await http.post(
+      Uri.parse(
+          '$_baseUrl/api/CustomEndpointCodigoValidacion?Username=$username'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse is List) {
+        final emailMessages = jsonResponse
+            .map((e) => Message.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        return emailMessages.first.message;
+      } else {
+        return '';
+      }
+    } else {
+      throw Exception(
+          'Error change pssword ${response.statusCode} - ${response.body}');
+    }
+  }
+
+
+   Future<List<ZipCode>> getZipCode(String zipCode) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/odata/ZipCode'),
+      headers: {'Authorization': 'Bearer ${await getToken()}'},
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ODataResponse<ZipCode>.fromJson(
+          jsonResponse, (json) => ZipCode.fromJson(json)).value;
+    } else {
+     return <ZipCode>[];
+    }
+  }
+
+  getCustomerAddress(String zipCode) {}
 }

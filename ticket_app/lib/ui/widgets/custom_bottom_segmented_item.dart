@@ -17,6 +17,11 @@ class CustomBottomSegmentedControlItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(6),
+      margin: EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -24,7 +29,7 @@ class CustomBottomSegmentedControlItem extends StatelessWidget {
           icon != null
               ? Icon(
                   icon,
-                  color: isSelected ? Colors.black : Colors.white,
+                  color: isSelected ? Colors.black : Colors.grey,
                   size: 15,
                 )
               : SizedBox.shrink(),
@@ -33,7 +38,7 @@ class CustomBottomSegmentedControlItem extends StatelessWidget {
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: isSelected ? Colors.black : Colors.white,
+                  color: isSelected ? Colors.black : Colors.grey,
                   fontWeight: FontWeight.bold,
                   overflow: TextOverflow.ellipsis),
             ),

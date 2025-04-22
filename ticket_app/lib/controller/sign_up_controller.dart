@@ -1,5 +1,6 @@
 import 'package:fluent_validation/models/validation_result.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/data/model/register.dart';
 import 'package:ticket_app/data/service/api_service.dart';
@@ -8,9 +9,19 @@ import 'package:ticket_app/utils/Validators/user_register_validator.dart';
 class SignUpController extends GetxController with StateMixin {
   var activeStep = 0.obs;
   var userRegister = UserRegister().obs;
+
+  var verificationCode = ''.obs;
+  var code = '';
   final ApiService apiService = Get.find<ApiService>();
   SignUpController() {
     change(null, status: RxStatus.success());
+  }
+
+  void verifyCode(String p) async {
+    code = p;
+    if (code == verificationCode.value) {
+      nextStep();
+    }
   }
 
   onChangeAddressLine1(String p1) {
@@ -45,12 +56,16 @@ class SignUpController extends GetxController with StateMixin {
 
   Future nextStep() async {
     if (activeStep.value == 0) {
-      if (!validUser()) {
+      if (!await validUser()) {
         return;
       }
     }
-
     if (activeStep.value == 1) {
+      if (verificationCode != code) {
+        return;
+      }
+    }
+    if (activeStep.value == 2) {
       if (!validUserAddress()) {
         return;
       }
@@ -58,20 +73,24 @@ class SignUpController extends GetxController with StateMixin {
       return;
     }
     activeStep.value++;
+    if (activeStep.value == 1) {
+      await sendCode();
+      return;
+    }
   }
 
-  Future<void> register() async {
+  Future<void> sendCode() async {
     try {
-      change(null, status: RxStatus.loading());
-      var response = await apiService.createCustomer(
-          UserRegister.mapUserRegisterToCustomer(userRegister.value));
-      change(null, status: RxStatus.success());
+      EasyLoading.show(status: 'loading...');
+
+      var response = await apiService.sendCode(userRegister.value.email!);
+      EasyLoading.dismiss();
       if (response != null) {
-        Get.offNamed('/home');
+        verificationCode.value = response;
       } else {
-        change(null, status: RxStatus.error());
+        EasyLoading.dismiss();
         Get.dialog(AlertDialog(
-          title: const Text('Error'),
+          title: const Text('Alert'),
           content:
               const Text('Unable to complete the operation, please try again'),
           actions: [
@@ -83,8 +102,10 @@ class SignUpController extends GetxController with StateMixin {
         ));
       }
     } catch (e) {
+      EasyLoading.dismiss();
+
       Get.dialog(AlertDialog(
-        title: const Text('Error'),
+        title: const Text('Alert'),
         content:
             const Text('Unable to complete the operation, please try again'),
         actions: [
@@ -97,12 +118,54 @@ class SignUpController extends GetxController with StateMixin {
     }
   }
 
-  bool validUser() {
+  Future<void> register() async {
+    try {
+      EasyLoading.show(status: 'loading...');
+
+      var response = await apiService.createCustomer(
+          UserRegister.mapUserRegisterToCustomer(userRegister.value));
+      EasyLoading.dismiss();
+      if (response != null) {
+        Get.offNamed('/home');
+      } else {
+        change(null, status: RxStatus.error());
+        Get.dialog(AlertDialog(
+          title: const Text('Alert'),
+          content:
+              const Text('Unable to complete the operation, please try again'),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text('Close'),
+            ),
+          ],
+        ));
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+
+      Get.dialog(AlertDialog(
+        title: const Text('Alert'),
+        content:
+            const Text('Unable to complete the operation, please try again'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Close'),
+          ),
+        ],
+      ));
+    }
+  }
+
+  Future<bool> validUser() async {
+    EasyLoading.show(status: 'loading...');
     final UserRegisterValidator userValidator = UserRegisterValidator();
     final ValidationResult validationResult =
         userValidator.validate(userRegister.value);
 
     if (validationResult.hasError) {
+      EasyLoading.dismiss();
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
         content: Text(validationResult.errors
@@ -117,6 +180,26 @@ class SignUpController extends GetxController with StateMixin {
       ));
       return false;
     } else {
+      var validEmail = await apiService.validateEmail(
+          userRegister.value.email!); // Call the API to validate email
+
+      if (validEmail == true) {
+        EasyLoading.dismiss();
+
+        Get.dialog(AlertDialog(
+          title: const Text('Alert'),
+          content: const Text('Email already exists'),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text('Close'),
+            ),
+          ],
+        ));
+        return false;
+      }
+      EasyLoading.dismiss();
+
       return true;
     }
   }
@@ -186,6 +269,17 @@ class SignUpController extends GetxController with StateMixin {
   onChangeConfirmPassword(String p1) {
     userRegister.update((val) {
       val!.confirmPassword = p1;
+    });
+  }
+
+   onChangeDateOfBirth(DateTime? value) {
+       userRegister.update((val) {
+      val!.birthday = value;
+    });
+  }
+    onChangeMiddleName(String p1) {
+    userRegister.update((val) {
+      val!.middleName = p1;
     });
   }
 }

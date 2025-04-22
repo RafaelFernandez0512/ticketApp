@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/sign_up_controller.dart';
+import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/service/api_service.dart';
+import 'package:ticket_app/ui/widgets/custom_datepicker.dart';
 import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
 import 'package:ticket_app/ui/widgets/custom_text_field.dart';
+import 'package:ticket_app/utils/gaps.dart';
 
 class RegisterClientForm extends StatelessWidget {
   SignUpController controller;
@@ -17,16 +20,45 @@ class RegisterClientForm extends StatelessWidget {
       child: Column(
         spacing: 20,
         children: [
-          CustomTextField(
-              labelText: 'First Name',
-              initialValue: controller.userRegister.value.firsName,
-              onChanged: (p) {
-                controller.onChangeFirstName(p);
-              }),
+          CircleAvatar(
+            radius: 50,
+            backgroundColor: CustomTheme.primaryLightColor,
+            child: Icon(
+              Icons.add_a_photo,
+              size: 50,
+              color: CustomTheme.white,
+            ),
+          ),
+          gapH12,
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                    labelText: 'First Name',
+                    initialValue: controller.userRegister.value.firsName,
+                    onChanged: (p) {
+                      controller.onChangeFirstName(p);
+                    }),
+              ),
+              gapW16,
+              Expanded(
+                child: CustomTextField(
+                    labelText: 'Middle Name',
+                    initialValue: controller.userRegister.value.middleName,
+                    onChanged: (p) {
+                      controller.onChangeMiddleName(p);
+                    }),
+              ),
+            ],
+          ),
           CustomTextField(
               initialValue: controller.userRegister.value.lastName,
               labelText: 'Last Name',
               onChanged: controller.onChangeLastName),
+          CustomDatePicker(
+              labelText: 'Date of Birth',
+              finalDefaultValue: controller.userRegister.value.birthday,
+              onChanged: controller.onChangeDateOfBirth),
           CustomTextField(
               initialValue: controller.userRegister.value.email,
               keyboard: TextInputType.emailAddress,
@@ -37,18 +69,27 @@ class RegisterClientForm extends StatelessWidget {
               keyboard: TextInputType.phone,
               labelText: 'Phone Number',
               onChanged: controller.onChangePhoneNumber),
-          CustomTextField(
-            initialValue: controller.userRegister.value.password,
-            labelText: 'Password',
-            obscureText: true,
-            onChanged: controller.onChangePassword,
-          ),
-          CustomTextField(
-            initialValue: controller.userRegister.value.confirmPassword,
-            labelText: 'Confirm Password',
-            onChanged: controller.onChangeConfirmPassword,
-            obscureText: true,
-          ),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  initialValue: controller.userRegister.value.password,
+                  labelText: 'Password',
+                  obscureText: true,
+                  onChanged: controller.onChangePassword,
+                ),
+              ),
+              gapW16,
+              Expanded(
+                child: CustomTextField(
+                  initialValue: controller.userRegister.value.confirmPassword,
+                  labelText: 'Confirm Password',
+                  onChanged: controller.onChangeConfirmPassword,
+                  obscureText: true,
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -120,7 +161,7 @@ class RegisterAddressForm extends StatelessWidget {
                 );
               }),
           FutureBuilder(
-              future: apiService.getTown(),
+              future: apiService.getTowns(),
               builder: (context, data) {
                 if (data.data == null) {
                   return Container();

@@ -32,7 +32,7 @@ class SessionService extends GetxService {
   // Verificar si hay una sesión activa
   bool isLoggedIn() {
     final session = getSession();
-    if (session != null) {
+    if (session != null && (session.username?.isNotEmpty ?? false)) {
       return !session.isSessionExpired();
     }
     return false;

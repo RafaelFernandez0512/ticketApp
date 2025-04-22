@@ -7,6 +7,7 @@ class CustomButton extends StatelessWidget {
   final NotificationType? type;
   final void Function()? onPressed;
   final IconAlignment iconAlignment;
+  
   const CustomButton({
     super.key,
     required this.label,
@@ -34,7 +35,7 @@ class CustomButton extends StatelessWidget {
       label: labelWidget,
       style: ButtonStyle(
         padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(vertical: 15, horizontal: 25)),
+            EdgeInsets.symmetric(vertical: 20, horizontal: 25)),
         backgroundColor: WidgetStateProperty.all(onPressed == null
             ? const Color(0xffB3B3B3)
             : notificationTypeColors[type]),

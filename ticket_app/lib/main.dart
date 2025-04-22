@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,12 +13,13 @@ import 'package:ticket_app/utils/constants.dart';
 
 void main() async {
   await initServices();
-  runApp(Sizer(
-    builder: (p0, p1, p2) => GetMaterialApp(
+  runApp(Sizer(builder: (p0, p1, p2) {
+    return GetMaterialApp(
       getPages: AppPages.pages,
       theme: CustomTheme.lightTheme,
-    ),
-  ));
+      builder: EasyLoading.init(), // Inicializa EasyLoading aquí
+    );
+  }));
 }
 
 Future<void> initServices() async {

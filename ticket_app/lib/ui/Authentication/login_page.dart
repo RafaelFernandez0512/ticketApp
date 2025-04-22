@@ -34,19 +34,26 @@ class LoginPage extends GetView<LoginController> {
                     controller: controller,
                   ),
                   gapH20,
-                  Container(
-                    child: Text('Forgot Password?',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Get.toNamed(Routes.FORGOT_PASSWORD),
+                        child: Text('Forgot Password?',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
                                   fontWeight: FontWeight.w900,
                                 )),
-                    alignment: Alignment.centerRight,
+                      ),
+                    ],
                   ),
                   gapH24,
                   CustomButton(
                     onPressed: () => controller.login(),
                     label: 'Log in',
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.login,
                       color: Colors.white,
                     ),

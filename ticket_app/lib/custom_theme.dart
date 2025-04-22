@@ -107,6 +107,7 @@ class CustomTheme {
       centerTitle: true,
       backgroundColor: primaryLightColor,
       scrolledUnderElevation: 1,
+     
       titleTextStyle: TextStyle(
         fontWeight: FontWeight.w500,
         color: white,
