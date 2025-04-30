@@ -8,9 +8,11 @@ class CustomDatePicker extends StatefulWidget {
       {super.key,
       this.finalDefaultValue,
       this.onChanged,
-      required this.labelText});
+      required this.labelText,
+      this.enabled});
   DateTime? finalDefaultValue;
   final ValueChanged<DateTime?>? onChanged;
+  bool? enabled;
   String labelText;
 
   @override
@@ -24,8 +26,11 @@ _getStringFromDate(DateTime date) {
 class _CustomDatePickerState extends State<CustomDatePicker> {
   @override
   Widget build(BuildContext context) {
-    var date = widget.finalDefaultValue ?? DateTime.now();
-    var controller = TextEditingController(text: _getStringFromDate(date));
+    var date = widget.finalDefaultValue;
+    var controller = TextEditingController(
+        text: widget.finalDefaultValue == null
+            ? '--/--/----'
+            : _getStringFromDate(date!));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -39,16 +44,18 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () {
-                    _selectDate(context,
-                        date); // Llama al método para abrir el selector de fecha
-                  },
+                  onTap: widget.enabled ?? true
+                      ? () {
+                          _selectDate(context,
+                              date); // Llama al método para abrir el selector de fecha
+                        }
+                      : null,
                   child: AbsorbPointer(
                     // Evita que el usuario edite directamente el campo
                     child: CustomTextField(
                       key: super.widget.key,
                       labelText: "",
-                      readOnly: true,
+                      readOnly: false,
                       controller: controller,
                     ),
                   ),

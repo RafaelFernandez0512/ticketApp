@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/sign_up_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
+import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/service/api_service.dart';
@@ -20,14 +23,23 @@ class RegisterClientForm extends StatelessWidget {
       child: Column(
         spacing: 20,
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: CustomTheme.primaryLightColor,
-            child: Icon(
-              Icons.add_a_photo,
-              size: 50,
-              color: CustomTheme.white,
-            ),
+          GestureDetector(
+            onTap: controller.getPhoto,
+            child: controller.userRegister.value.photo != null
+                ? CircleAvatar(
+                    radius: 50,
+                    backgroundImage:
+                        FileImage(File(controller.userRegister.value.photo!)),
+                  )
+                : CircleAvatar(
+                    radius: 50,
+                    backgroundColor: CustomTheme.primaryLightColor,
+                    child: Icon(
+                      Icons.add_photo_alternate,
+                      size: 50,
+                      color: CustomTheme.white,
+                    ),
+                  ),
           ),
           gapH12,
           Row(
@@ -100,13 +112,14 @@ class RegisterAddressForm extends StatelessWidget {
   Function(String)? onChangedAddressLine1;
   Function(String)? onChangedAddressLine2;
   ValueChanged<String?>? onChangedState;
-  ValueChanged<String?>? onChangedTown;
-  ValueChanged<String?>? onChangedCity;
+  ValueChanged<int?>? onChangedTown;
+  ValueChanged<int?>? onChangedCity;
   Function(String)? onChangedZipCode;
   String addressLine1 = '';
   String addressLine2 = '';
   String state = '';
-  String town = '';
+  int city;
+  int town;
   String zipCode = '';
 
   RegisterAddressForm(
@@ -120,7 +133,8 @@ class RegisterAddressForm extends StatelessWidget {
       this.addressLine1 = '',
       this.addressLine2 = '',
       this.state = '',
-      this.town = ''});
+      this.city = 0,
+      this.town = 0});
   var apiService = Get.find<ApiService>();
   @override
   Widget build(
@@ -148,7 +162,7 @@ class RegisterAddressForm extends StatelessWidget {
                   onChanged: onChangedState,
                   labelText: 'State',
                   selectedItem: data.data
-                      ?.where((x) => x.name == state)
+                      ?.where((x) => x.idState == state)
                       .firstOrNull
                       ?.idState,
                   showSearchBox: true,
@@ -161,16 +175,43 @@ class RegisterAddressForm extends StatelessWidget {
                 );
               }),
           FutureBuilder(
-              future: apiService.getTowns(),
+              future: state.isEmpty
+                  ? Future.value(List<City>.empty())
+                  : apiService.getCity(state),
               builder: (context, data) {
                 if (data.data == null) {
                   return Container();
                 }
-                return CustomDropdown<Town, String>(
+                return CustomDropdown<City, int>(
+                  items: data.data?.toList() ?? [],
+                  onChanged: onChangedCity,
+                  selectedItem: data.data
+                      ?.where((x) => x.idCity == city)
+                      .firstOrNull
+                      ?.idCity,
+                  labelText: 'City',
+                  showSearchBox: true,
+                  textEditingController: TextEditingController(),
+                  valueProperty: "idCity",
+                  labelProperty: "Name",
+                  labelBuilder: (item) {
+                    return '${item!["Name"]}';
+                  },
+                );
+              }),
+          FutureBuilder(
+              future: city > 0
+                  ? Future.value(List<Town>.empty())
+                  : apiService.getTowns(),
+              builder: (context, data) {
+                if (data.data == null) {
+                  return Container();
+                }
+                return CustomDropdown<Town, int>(
                   items: data.data?.toList() ?? [],
                   onChanged: onChangedTown,
                   selectedItem: data.data
-                      ?.where((x) => x.name == town)
+                      ?.where((x) => x.idTown == town)
                       .firstOrNull
                       ?.idTown,
                   labelText: 'Town',

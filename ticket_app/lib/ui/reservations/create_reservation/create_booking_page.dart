@@ -5,7 +5,8 @@ import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/controller/create_booking_controller.dart';
 import 'package:ticket_app/data/model/travel.dart';
-import 'package:ticket_app/ui/reservations/reservation_form.dart';
+import 'package:ticket_app/ui/reservations/create_reservation/confirmation_ticket_view.dart';
+import 'package:ticket_app/ui/reservations/create_reservation/reservation_form.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/notification_type.dart';
@@ -16,7 +17,7 @@ class CreateBookingPage extends GetView<CreateBookingController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Create Booking'),
+          title: Text(controller.title),
           leading: BackButton(
             color: Colors.white,
             onPressed: () {
@@ -83,39 +84,8 @@ class CreateBookingPage extends GetView<CreateBookingController> {
           children: [
             const Text('Booking Confirmation',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Container(
-                padding: EdgeInsets.all(20.sp),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: controller.summaries.map((summary) {
-                    return Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                summary.key,
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            gapH8,
-                            Text(
-                              summary.value,
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ],
-                        ),
-                        gapH8,
-                        const Divider(color: Colors.black, thickness: 1),
-                        gapH8,
-                      ],
-                    );
-                  }).toList(),
-                )),
+            gapH16,
+            ConfirmationTicketView(ticket: controller.createReservation.value),
             gapH20,
             Row(
               children: [
@@ -123,41 +93,26 @@ class CreateBookingPage extends GetView<CreateBookingController> {
                   child: CustomButton(
                     type: NotificationType.normal,
                     label: 'Back',
-                    
+                    iconAlignment: IconAlignment.start,
                     icon: const Icon(
-                      Icons.check,
+                      Icons.arrow_back,
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      Get.back();
+                      controller.backStep();
                     },
                   ),
                 ),
+                gapW20,
                 Expanded(
                   child: CustomButton(
-                    type: NotificationType.warning,
-                    label: 'Confirm',
-                    icon: const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Get.back();
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: CustomButton(
-                    type: NotificationType.success,
-                    label: 'Pay Now',
-                    icon: const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Get.back();
-                    },
-                  ),
+                      type: NotificationType.success,
+                      label: 'Confirm',
+                      icon: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                      ),
+                      onPressed: controller.nextStep),
                 ),
               ],
             )

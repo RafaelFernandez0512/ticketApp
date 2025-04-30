@@ -7,4 +7,7 @@ abstract class Routes {
   static const HOME = '/home';
   static const CREATE_BOOKING = '/createBooking';
   static const FORGOT_PASSWORD = '/forgotPassword';
+  static const CREATE_ADDRESS = '/createAddress';
+  static const PAYMENT = '/payment';
+  static const MY_BOOKING_DETAIL = 'MY_BOOKING_DETAIL';
 }

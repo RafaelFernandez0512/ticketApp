@@ -1,18 +1,18 @@
 class CustomerAddress {
-  final int idCustomerAddress;
-  final String fullAddress;
-  final String addressLine1;
-  final String addressLine2;
-  final String zipCode;
-  final int reservationNumber;
+   int? idCustomerAddress;
+   String? fullAddress;
+   String? addressLine1;
+   String? addressLine2;
+   String? zipCode;
+   int? reservationNumber;
 
   CustomerAddress({
-    required this.idCustomerAddress,
-    required this.fullAddress,
-    required this.addressLine1,
-    required this.addressLine2,
-    required this.zipCode,
-    required this.reservationNumber,
+     this.idCustomerAddress,
+     this.fullAddress,
+     this.addressLine1,
+     this.addressLine2,
+     this.zipCode,
+     this.reservationNumber,
   });
 
   // Método para convertir un JSON en un objeto CustomerAddress

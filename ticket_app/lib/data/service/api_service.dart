@@ -2,13 +2,18 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:ticket_app/data/model/bag.dart';
+import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/company.dart';
+import 'package:ticket_app/data/model/create_reservation.dart';
 import 'package:ticket_app/data/model/customer.dart';
 import 'package:ticket_app/data/model/customer_address.dart';
 import 'package:ticket_app/data/model/day.dart';
 import 'package:ticket_app/data/model/message.dart';
 import 'package:ticket_app/data/model/odata_reponse.dart';
 import 'package:ticket_app/data/model/payment_method.dart';
+import 'package:ticket_app/data/model/price_online.dart';
+import 'package:ticket_app/data/model/price_online_request.dart';
+import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
@@ -112,9 +117,12 @@ class ApiService extends GetxService {
       throw Exception('Error al obtener town: ${response.statusCode}');
     }
   }
-  Future<List<Town>> getTown(String idTown) async {
+
+  Future<List<Town>> getTown(int idCity) async {
+    //NombreCiudad
+    var queryParams = "?\$filter=City/Id_City eq $idCity";
     final response = await http.get(
-      Uri.parse('$_baseUrl/api/odata/Town'),
+      Uri.parse('$_baseUrl/api/odata/Town$queryParams'),
       headers: {'Authorization': 'Bearer ${await getToken()}'},
     );
 
@@ -126,6 +134,23 @@ class ApiService extends GetxService {
       throw Exception('Error al obtener town: ${response.statusCode}');
     }
   }
+
+  Future<List<City>> getCity(String idState) async {
+    var queryParams = "?\$filter=State/Id_state eq '$idState'";
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/odata/city$queryParams'),
+      headers: {'Authorization': 'Bearer ${await getToken()}'},
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ODataResponse<City>.fromJson(
+          jsonResponse, (json) => City.fromJson(json)).value;
+    } else {
+      throw Exception('Error al obtener town: ${response.statusCode}');
+    }
+  }
+
   Future<List<Travel>> getTravel() async {
     const queryParams =
         r"$expand=StateFrom,StateTo,Employee($select=FullName),Vehicle";
@@ -141,6 +166,37 @@ class ApiService extends GetxService {
           jsonResponse, (json) => Travel.fromJson(json)).value;
     } else {
       throw Exception('Error al obtener viajes: ${response.statusCode}');
+    }
+  }
+
+  Future<List<Travel>> getFilteredTravel(
+    String stateFromId,
+    String stateToId,
+    DateTime shortDepartureDate,
+  ) async {
+    final formattedDate = shortDepartureDate.toIso8601String();
+
+    final queryParams =
+        r"$expand=StateFrom,StateTo,Employee($select=FullName),Vehicle&"
+                r"$filter=StateFrom/Id_State eq '" +
+            stateFromId +
+            r"' and StateTo/Id_State eq '" +
+            stateToId +
+            r"' and ShortDepartureDate eq " +
+            formattedDate;
+
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/odata/Travel?$queryParams'),
+      headers: {'Authorization': 'Bearer ${await getToken()}'},
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ODataResponse<Travel>.fromJson(
+          jsonResponse, (json) => Travel.fromJson(json)).value;
+    } else {
+      throw Exception(
+          'Error al obtener viajes filtrados: ${response.statusCode}');
     }
   }
 
@@ -234,6 +290,33 @@ class ApiService extends GetxService {
     }
   }
 
+  Future<Customer?> getCustomer(String username) async {
+    var queryParams = "\$filter=email eq '$username'";
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/odata/Customer?$queryParams'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      var customer = ODataResponse<Customer>.fromJson(
+          jsonResponse, (json) => Customer.fromJson(json)).value.firstOrNull;
+      var session = sessionService.getSession();
+      if (session != null && customer != null) {
+        session.customerId = customer.idCustomer;
+        sessionService.saveSession(session);
+      }
+
+      return customer;
+    } else {
+      throw Exception(
+          'Error al obtener cliente: ${response.statusCode} - ${response.body}');
+    }
+  }
+
   Future<bool?> validateEmail(String email) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/api/CustomEndpointEmailValidacion?username=$email'),
@@ -307,8 +390,7 @@ class ApiService extends GetxService {
     }
   }
 
-
-   Future<List<ZipCode>> getZipCode(String zipCode) async {
+  Future<List<ZipCode>> getZipCode(String zipCode) async {
     final response = await http.get(
       Uri.parse('$_baseUrl/api/odata/ZipCode'),
       headers: {'Authorization': 'Bearer ${await getToken()}'},
@@ -319,9 +401,96 @@ class ApiService extends GetxService {
       return ODataResponse<ZipCode>.fromJson(
           jsonResponse, (json) => ZipCode.fromJson(json)).value;
     } else {
-     return <ZipCode>[];
+      return <ZipCode>[];
     }
   }
 
   getCustomerAddress(String zipCode) {}
+
+  Future<PriceEngine?> calculatePrice(PriceOnlineRequest value) async {
+    // Construye los parámetros de consulta
+    final queryParams = {
+      'Travel': value.travel.toString(),
+      'Customer': value.customer.toString(),
+      'PassengerNumber': value.passengerNumber.toString(),
+      'StateFrom': value.stateFrom,
+      'CityFrom': value.cityFrom.toString(),
+      'TownFrom': value.townFrom.toString(),
+      'ZipCodeFrom': value.zipCodeFrom,
+      'StateTo': value.stateTo,
+      'CityTo': value.cityTo.toString(),
+      'TownTo': value.townTo.toString(),
+      'ZipCodeTo': value.zipCodeTo,
+      'Bag': value.bag.toString(),
+    };
+
+    // Construye la URL con los parámetros
+    final uri = Uri.parse('$_baseUrl/api/CustomEndpointPrecioViaje')
+        .replace(queryParameters: queryParams);
+
+    // Realiza la solicitud HTTP
+    final response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+    );
+
+    // Manejo de la respuesta
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse is List) {
+        final prices = jsonResponse
+            .map((e) => PriceEngine.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        return prices.first;
+      } else {
+        return null;
+      }
+    } else {
+      throw Exception(
+          'Error calculating price ${response.statusCode} - ${response.body}');
+    }
+  }
+
+  removeAddress(String id) {}
+
+  Future<Reservation?> createReservation(CreateReservation value) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/odata/Reservation'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getToken()}',
+      },
+      body: jsonEncode(value.toJson()),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return Reservation.fromJson(jsonResponse);
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Reservation>> getReservations() async {
+    var parameters =
+        r'?$expand=StateFrom,StateTo,CityFrom,CityTo,TownTo,TownFrom,Travel($expand=Employee($select=FullName),Vehicle($select=Name),),ReservationStatus';
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/odata/Reservation$parameters'),
+      headers: {'Authorization': 'Bearer ${await getToken()}'},
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      var reservations = ODataResponse<Reservation>.fromJson(
+          jsonResponse, (json) => Reservation.fromJson(json)).value;
+      reservations.sort((a, b) => a.departureDate!.compareTo(b.departureDate!));
+      return reservations;
+    } else {
+      throw Exception('Error request reservation: ${response.statusCode}');
+    }
+  }
 }

@@ -30,7 +30,7 @@ class AuthService extends GetxService {
           refreshToken: response.body));
       return response.body; // Token de autenticación
     } else {
-      throw Exception('Error en la autenticación: ${response.statusCode}');
+      return '';
     }
   }
 

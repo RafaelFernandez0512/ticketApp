@@ -3,26 +3,44 @@ import 'package:ticket_app/data/model/register.dart';
 
 class UserRegisterValidator extends AbstractValidator<UserRegister> {
   UserRegisterValidator() {
-    ruleFor((user) => user.firsName, key: 'firsName').notEmpty();
-    ruleFor((user) => user.lastName, key: 'lastName').notEmpty();
-    ruleFor((user) => user.email, key: 'email').notEmpty();
-    ruleFor((user) => user.password, key: 'password').notEmpty();
-    ruleFor((user) => user.confirmPassword, key: 'confirmPassword').notEmpty();
+    ruleFor((user) => user.firsName, key: 'firsName').must(
+        (value) => value != null && value.isNotEmpty,
+        'First name is required.');
+    ruleFor((user) => user.lastName, key: 'lastName').must(
+        (value) => value != null && value.isNotEmpty, 'Last name is required.');
+    ruleFor((user) => user.email, key: 'email').must(
+        (value) => value != null && value.isNotEmpty, 'Email is required.');
+    ruleFor((user) => user.password, key: 'password').must(
+        (value) => value != null && value.isNotEmpty, 'Password is required.');
+    ruleFor((user) => user.confirmPassword, key: 'confirmPassword').must(
+        (value) => value != null && value.isNotEmpty,
+        'Confirm password is required.');
 
     ruleFor((user) => user, key: 'confirmPassword').must((value) {
       var user = value as UserRegister;
       return user.confirmPassword == user.password;
-    }, 'Password and Confirm Password must be the same');
-    ruleFor((user) => user.phoneNumber, key: 'phoneNumber').notEmpty();
+    }, 'Password and Confirm Password must match.');
+    ruleFor((user) => user.phoneNumber, key: 'phoneNumber').must(
+        (value) => value != null && value.isNotEmpty,
+        'Phone number is required.');
   }
 }
 
 class UserRegisterAddressValidator extends AbstractValidator<UserRegister> {
   UserRegisterAddressValidator() {
-    ruleFor((user) => user.addressLine1, key: 'addressLine1').notEmpty();
-    ruleFor((user) => user.addressLine2, key: 'addressLine2').notEmpty();
-    ruleFor((user) => user.state, key: 'state').notEmpty();
-    ruleFor((user) => user.town, key: 'town').notEmpty();
-    ruleFor((user) => user.zipCode, key: 'zipCode').notEmpty();
+    ruleFor((user) => user.addressLine1, key: 'addressLine1').must(
+        (value) => value != null && value.isNotEmpty,
+        'Address Line 1 is required.');
+    ruleFor((user) => user.addressLine2, key: 'addressLine2').must(
+        (value) => value != null && value.isNotEmpty,
+        'Address Line 2 is required.');
+    ruleFor((user) => user.state, key: 'state').must(
+        (value) => value != null && value.isNotEmpty, 'State is required.');
+    ruleFor((user) => user.city, key: 'city')
+        .must((value) => value != null, 'City is required.');
+    ruleFor((user) => user.town, key: 'town')
+        .must((value) => value != null, 'Town is required.');
+    ruleFor((user) => user.zipCode, key: 'zipCode').must(
+        (value) => value != null && value.isNotEmpty, 'Zip Code is required.');
   }
 }

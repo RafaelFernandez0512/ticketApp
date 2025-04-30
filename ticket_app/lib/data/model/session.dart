@@ -5,6 +5,7 @@ class Session {
   DateTime? expirationTemporalTokenDate;
   String? token;
   String? refreshToken;
+  int? customerId;
 
   Session({
     this.username,
@@ -13,6 +14,7 @@ class Session {
     this.expirationTemporalTokenDate,
     this.token,
     this.refreshToken,
+    this.customerId,
   });
 
   // Método para convertir el modelo a un Map (JSON)
@@ -25,6 +27,7 @@ class Session {
       'refreshToken': refreshToken,
       'expirationTemporalTokenDate':
           expirationTemporalTokenDate?.toIso8601String(),
+      'customerId': customerId,
     };
   }
 
@@ -38,6 +41,9 @@ class Session {
       refreshToken: json['refreshToken'],
       expirationTemporalTokenDate:
           DateTime.tryParse(json['expirationTemporalTokenDate'] ?? ''),
+      customerId: json['customerId'] != null
+          ? int.tryParse(json['customerId'].toString())
+          : null,
     );
   }
 

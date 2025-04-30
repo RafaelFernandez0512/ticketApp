@@ -1,5 +1,7 @@
+import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/employee.dart';
 import 'package:ticket_app/data/model/state.dart';
+import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/vehicle.dart';
 
 class Travel {
@@ -12,6 +14,10 @@ class Travel {
   final StateModel? stateTo;
   final Vehicle? vehicle;
   final Employee? employee;
+  final City? cityFrom;
+  final City? cityTo;
+  final Town? townFrom;
+  final Town? townTo;
 
   Travel({
     required this.travelNumber,
@@ -23,6 +29,10 @@ class Travel {
     required this.stateTo,
     required this.vehicle,
     required this.employee,
+    required this.cityFrom,
+    required this.cityTo,
+    required this.townFrom,
+    required this.townTo,
   });
 
   // Método para convertir un JSON en un objeto Travel
@@ -33,8 +43,17 @@ class Travel {
       route: json['Route'],
       seatsNumber: json['SeatsNumber'],
       seatsAvailable: json['SeatsAvailable'],
-      stateFrom: StateModel.fromJson(json['StateFrom']),
-      stateTo: StateModel.fromJson(json['StateTo']),
+      stateFrom: json['StateFrom'] != null
+          ? StateModel.fromJson(json['StateFrom'])
+          : null,
+      stateTo:
+          json['StateTo'] != null ? StateModel.fromJson(json['StateTo']) : null,
+      cityFrom:
+          json['CityFrom'] != null ? City.fromJson(json['CityFrom']) : null,
+      cityTo: json['CityTo'] != null ? City.fromJson(json['CityTo']) : null,
+      townFrom:
+          json['TownFrom'] != null ? Town.fromJson(json['TownFrom']) : null,
+      townTo: json['TownTo'] != null ? Town.fromJson(json['TownTo']) : null,
       vehicle: json['Vehicle'] != null
           ? Vehicle.fromJson(json['Vehicle'])
           : null, // Manejo de vehículo nulo

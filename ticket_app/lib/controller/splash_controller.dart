@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
 
@@ -20,7 +21,9 @@ class SplashController extends GetxController with StateMixin {
       if (isLogged && user != null) {
         var auth = await Get.find<AuthService>()
             .authenticate(user.username ?? "", user.password ?? "");
+
         if (auth.isNotEmpty) {
+          await Get.find<ApiService>().getCustomer(user.username!);
           Get.offAllNamed(Routes.HOME);
           return;
         }

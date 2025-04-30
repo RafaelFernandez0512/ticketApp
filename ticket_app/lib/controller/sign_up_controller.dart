@@ -2,6 +2,7 @@ import 'package:fluent_validation/models/validation_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ticket_app/data/model/register.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/utils/Validators/user_register_validator.dart';
@@ -42,9 +43,15 @@ class SignUpController extends GetxController with StateMixin {
     });
   }
 
-  void onChangeTown(String? p1) {
+  void onChangeTown(int? p1) {
     userRegister.update((val) {
       val!.town = p1;
+    });
+  }
+
+  void onChangeCity(int? p1) {
+    userRegister.update((val) {
+      val!.city = p1;
     });
   }
 
@@ -272,14 +279,30 @@ class SignUpController extends GetxController with StateMixin {
     });
   }
 
-   onChangeDateOfBirth(DateTime? value) {
-       userRegister.update((val) {
+  onChangeDateOfBirth(DateTime? value) {
+    userRegister.update((val) {
       val!.birthday = value;
     });
   }
-    onChangeMiddleName(String p1) {
+
+  onChangeMiddleName(String p1) {
     userRegister.update((val) {
       val!.middleName = p1;
     });
+  }
+
+  Future<void> getPhoto() async {
+    // Lógica para seleccionar una foto
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      // Aquí puedes manejar la imagen seleccionada
+      userRegister.update((val) {
+        val!.photo = image.path; // Guarda la ruta de la imagen en el modelo
+      });
+    
+      // Puedes actualizar el controlador o el estado con la imagen seleccionada
+    }
   }
 }

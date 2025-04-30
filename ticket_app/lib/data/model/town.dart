@@ -1,5 +1,5 @@
 class Town {
-  final String idTown;
+  final int idTown;
   final String name;
   final double price;
 
@@ -8,7 +8,7 @@ class Town {
   // Método para convertir un JSON en un objeto Town
   factory Town.fromJson(Map<String, dynamic> json) {
     return Town(
-      idTown: json['Id_Town'].toString(),
+      idTown: int.parse(json['Id_Town'].toString()),
       name: json['Name'],
       price: (json['Price'] as num)
           .toDouble(), // Convertir a double para seguridad de tipos

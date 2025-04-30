@@ -12,10 +12,13 @@ class UserRegister {
   String? addressLine1;
   String? addressLine2;
   String? state;
-  String? town;
+  int? town;
   String? zipCode;
   DateTime? birthday;
   String? middleName;
+
+  int? city;
+  String? photo;
 
   static CreateUserRequest mapUserRegisterToCustomer(
       UserRegister userRegister) {
@@ -36,7 +39,6 @@ class UserRegister {
       password: userRegister.password,
       creadoDesdeMovil: true,
       creationDate: DateTime.now(),
-      
     );
   }
 }

@@ -198,7 +198,7 @@ class CustomDropdown<T, K> extends StatelessWidget {
         dropdownSearchData: showSearchBox
             ? DropdownSearchData(
                 searchController: textEditingController,
-                searchInnerWidgetHeight: 35.sp,
+                searchInnerWidgetHeight: 50.sp,
                 searchInnerWidget: Container(
                   height: 35.sp,
                   padding: EdgeInsets.all(4.sp),
@@ -213,7 +213,7 @@ class CustomDropdown<T, K> extends StatelessWidget {
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 0.sp, horizontal: 5.sp),
                         hintText: 'Buscar $labelText...',
-                        hintStyle: TextStyle(fontSize: 11.sp),
+                        hintStyle: TextStyle(fontSize: 14.sp),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               width: 1, color: Theme.of(context).primaryColor),

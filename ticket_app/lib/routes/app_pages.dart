@@ -11,7 +11,7 @@ import 'package:ticket_app/ui/Authentication/forgot_password.dart';
 import 'package:ticket_app/ui/Authentication/sign_up_page.dart';
 import 'package:ticket_app/ui/Authentication/login_page.dart';
 import 'package:ticket_app/ui/home_page.dart';
-import 'package:ticket_app/ui/reservations/create_booking_page.dart';
+import 'package:ticket_app/ui/reservations/create_reservation/create_booking_page.dart';
 import 'package:ticket_app/ui/splash_page.dart';
 
 part './app_routes.dart';

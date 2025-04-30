@@ -26,7 +26,7 @@ Future<void> initServices() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   var sharedPreferences = await SharedPreferences.getInstance();
-  Get.lazyPut<SharedPreferences>(() => sharedPreferences);
+  Get.put<SharedPreferences>(sharedPreferences, permanent: true);
   Get.lazyPut<SessionService>(() => SessionService());
   Get.lazyPut<AuthService>(() => AuthService(urlApi));
   Get.lazyPut<ApiService>(() => ApiService(urlApi));

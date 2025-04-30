@@ -161,6 +161,7 @@ class SignUpPage extends GetView<SignUpController> {
               onChangedAddressLine2: controller.onChangeAddressLine2,
               onChangedState: controller.onChangeState,
               onChangedTown: controller.onChangeTown,
+              onChangedCity: controller.onChangeCity,
               onChangedZipCode: controller.onChangeZipCode,
             ),
             gapH20,
