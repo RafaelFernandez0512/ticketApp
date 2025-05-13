@@ -21,7 +21,7 @@ class CreateBookingPage extends GetView<CreateBookingController> {
           leading: BackButton(
             color: Colors.white,
             onPressed: () {
-              Navigator.of(context).pop();
+              controller.backStep();
             },
           ),
         ),
@@ -38,6 +38,7 @@ class CreateBookingPage extends GetView<CreateBookingController> {
                         activeStep: controller.activeStep.value,
                         showLoadingAnimation: false,
                         stepShape: StepShape.rRectangle,
+                        finishedStepTextColor: Colors.grey,
                         steps: const [
                           EasyStep(
                             customStep:
@@ -49,7 +50,7 @@ class CreateBookingPage extends GetView<CreateBookingController> {
                             title: 'Confirmation',
                           ),
                         ]),
-                    _buildStepContent(controller.activeStep.value),
+                    _buildStepContent(controller.activeStep.value, context),
                   ],
                 ),
               ),
@@ -58,13 +59,16 @@ class CreateBookingPage extends GetView<CreateBookingController> {
         ));
   }
 
-  Widget _buildStepContent(int step) {
+  Widget _buildStepContent(int step, BuildContext context) {
     switch (step) {
       case 0:
         return Column(
           children: [
-            ReservationForm(
-              controller: controller,
+            controller.obx(
+              (state) => ReservationForm(
+                controller: controller,
+              ),
+              onLoading: const Center(child: CircularProgressIndicator()),
             ),
             gapH30,
             CustomButton(
@@ -75,7 +79,7 @@ class CreateBookingPage extends GetView<CreateBookingController> {
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  controller.nextStep();
+                  controller.nextStep(context);
                 }),
           ],
         );
@@ -91,31 +95,32 @@ class CreateBookingPage extends GetView<CreateBookingController> {
               children: [
                 Expanded(
                   child: CustomButton(
-                    type: NotificationType.normal,
-                    label: 'Back',
-                    iconAlignment: IconAlignment.start,
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      controller.backStep();
-                    },
-                  ),
-                ),
-                gapW20,
-                Expanded(
-                  child: CustomButton(
-                      type: NotificationType.success,
+                      type: NotificationType.warning,
                       label: 'Confirm',
                       icon: const Icon(
                         Icons.check,
                         color: Colors.white,
                       ),
-                      onPressed: controller.nextStep),
+                      onPressed: () => controller.nextStep(context)),
+                ),
+                gapW20,
+                Expanded(
+                  child: CustomButton(
+                    type: NotificationType.success,
+                    label: 'Pay now',
+                    iconAlignment: IconAlignment.end,
+                    icon: const Icon(
+                      Icons.payment,
+                      color: Colors.white,
+                    ),
+                    onPressed: () async {
+                      await controller.completePayment(context);
+                    },
+                  ),
                 ),
               ],
-            )
+            ),
+            gapH16,
           ],
         );
       default:

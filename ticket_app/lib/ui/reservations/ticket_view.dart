@@ -27,7 +27,7 @@ class TicketView extends StatelessWidget {
               children: [
                 Text(ticket['StateFrom'],
                     style: Theme.of(context).textTheme.titleMedium),
-                Spacer(),
+                const Spacer(),
                 RoundShape(
                   shapeColor: CustomTheme.secondColor,
                 ),

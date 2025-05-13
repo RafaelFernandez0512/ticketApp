@@ -9,12 +9,13 @@ class CustomDatePicker extends StatefulWidget {
       this.finalDefaultValue,
       this.onChanged,
       required this.labelText,
+      this.firstDate,
       this.enabled});
   DateTime? finalDefaultValue;
   final ValueChanged<DateTime?>? onChanged;
   bool? enabled;
   String labelText;
-
+  DateTime? firstDate;
   @override
   State<CustomDatePicker> createState() => _CustomDatePickerState();
 }
@@ -70,7 +71,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: DateTime(1900),
+      firstDate: widget.firstDate ?? DateTime(1900),
       lastDate: DateTime.now().add(const Duration(days: 356 * 100)),
       builder: (context, child) {
         var currentTheme = Theme.of(context);

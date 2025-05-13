@@ -1,5 +1,6 @@
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/employee.dart';
+import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/vehicle.dart';
@@ -18,6 +19,7 @@ class Travel {
   final City? cityTo;
   final Town? townFrom;
   final Town? townTo;
+  final Schedule? schedule;
 
   Travel({
     required this.travelNumber,
@@ -33,13 +35,14 @@ class Travel {
     required this.cityTo,
     required this.townFrom,
     required this.townTo,
+    required this.schedule,
   });
 
   // Método para convertir un JSON en un objeto Travel
   factory Travel.fromJson(Map<String, dynamic> json) {
     return Travel(
       travelNumber: json['TravelNumber'],
-      departureDate: DateTime.parse(json['DepartureDate']),
+      departureDate: DateTime.parse(json['DepartureDate']).toLocal(),
       route: json['Route'],
       seatsNumber: json['SeatsNumber'],
       seatsAvailable: json['SeatsAvailable'],
@@ -59,6 +62,9 @@ class Travel {
           : null, // Manejo de vehículo nulo
       employee:
           json['Employee'] != null ? Employee.fromJson(json['Employee']) : null,
+      schedule: json['DepartureTime'] != null
+          ? Schedule.fromJson(json['DepartureTime'])
+          : null, // Manejo de horario nulo
     );
   }
 

@@ -192,7 +192,7 @@ class ConfirmationTicketView extends StatelessWidget {
                               style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
-                      Spacer(),
+                     const Spacer(),
                       Column(
                         children: [
                           Text(formatTime(ticket.date!.toIso8601String()),
@@ -207,7 +207,7 @@ class ConfirmationTicketView extends StatelessWidget {
                     ],
                   ),
                 ),
-                Divider(),
+               const Divider(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(

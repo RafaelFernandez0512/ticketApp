@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:fluent_validation/models/validation_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -5,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ticket_app/data/model/register.dart';
 import 'package:ticket_app/data/service/api_service.dart';
+import 'package:ticket_app/data/service/authentication_service.dart';
+import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/utils/Validators/user_register_validator.dart';
 
 class SignUpController extends GetxController with StateMixin {
@@ -40,6 +45,8 @@ class SignUpController extends GetxController with StateMixin {
   void onChangeState(String? p1) {
     userRegister.update((val) {
       val!.state = p1;
+      val.town = null;
+      val.city = null;
     });
   }
 
@@ -52,6 +59,7 @@ class SignUpController extends GetxController with StateMixin {
   void onChangeCity(int? p1) {
     userRegister.update((val) {
       val!.city = p1;
+      val.town = null;
     });
   }
 
@@ -68,7 +76,7 @@ class SignUpController extends GetxController with StateMixin {
       }
     }
     if (activeStep.value == 1) {
-      if (verificationCode != code) {
+      if (verificationCode.value != code) {
         return;
       }
     }
@@ -133,7 +141,15 @@ class SignUpController extends GetxController with StateMixin {
           UserRegister.mapUserRegisterToCustomer(userRegister.value));
       EasyLoading.dismiss();
       if (response != null) {
-        Get.offNamed('/home');
+        Get.back();
+        //snackbar
+        Get.snackbar(
+          'Success',
+          'Registration completed successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Get.theme.snackBarTheme.backgroundColor,
+          colorText: Get.theme.snackBarTheme.actionTextColor,
+        );
       } else {
         change(null, status: RxStatus.error());
         Get.dialog(AlertDialog(
@@ -240,7 +256,11 @@ class SignUpController extends GetxController with StateMixin {
     if (activeStep.value == 0) {
       Get.back();
     }
+
     activeStep.value--;
+    if (activeStep.value == 1) {
+      code = '';
+    }
   }
 
   onChangeLastName(String p1) {
@@ -250,33 +270,23 @@ class SignUpController extends GetxController with StateMixin {
   }
 
   onChangeEmail(String p1) {
-    userRegister.update((val) {
-      val!.email = p1;
-    });
+    userRegister.value.email = p1;
   }
 
   onChangeFirstName(String p1) {
-    userRegister.update((val) {
-      val!.firsName = p1;
-    });
+    userRegister.value.firsName = p1;
   }
 
   onChangePhoneNumber(String p1) {
-    userRegister.update((val) {
-      val!.phoneNumber = p1;
-    });
+    userRegister.value.phoneNumber = p1;
   }
 
   onChangePassword(String p1) {
-    userRegister.update((val) {
-      val!.password = p1;
-    });
+    userRegister.value.password = p1;
   }
 
   onChangeConfirmPassword(String p1) {
-    userRegister.update((val) {
-      val!.confirmPassword = p1;
-    });
+    userRegister.value.confirmPassword = p1;
   }
 
   onChangeDateOfBirth(DateTime? value) {
@@ -286,23 +296,24 @@ class SignUpController extends GetxController with StateMixin {
   }
 
   onChangeMiddleName(String p1) {
-    userRegister.update((val) {
-      val!.middleName = p1;
-    });
+    userRegister.value.middleName = p1;
   }
 
   Future<void> getPhoto() async {
-    // Lógica para seleccionar una foto
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      // Aquí puedes manejar la imagen seleccionada
+      final bytes = await File(image.path).readAsBytes();
+      final base64String = base64Encode(bytes);
       userRegister.update((val) {
-        val!.photo = image.path; // Guarda la ruta de la imagen en el modelo
+        val!.photo = base64String;
       });
-    
-      // Puedes actualizar el controlador o el estado con la imagen seleccionada
     }
+  }
+
+  void onChangeGender(String s) {
+    userRegister.value.gender = s;
+    update();
   }
 }

@@ -1,8 +1,6 @@
 import 'package:ticket_app/data/model/customer.dart';
 
 class UserRegister {
-  //FirsName,LastName,Email,Password,ConfirmPassword,PhoneNumber
-  // AddressLine1,AddressLine2,State,Town,City,ZipCode
   String? firsName;
   String? lastName;
   String? email;
@@ -16,8 +14,8 @@ class UserRegister {
   String? zipCode;
   DateTime? birthday;
   String? middleName;
-
   int? city;
+  String? gender;
   String? photo;
 
   static CreateUserRequest mapUserRegisterToCustomer(
@@ -37,7 +35,10 @@ class UserRegister {
       contactPhoneNumber: userRegister.phoneNumber,
       confirmPassword: userRegister.confirmPassword,
       password: userRegister.password,
-      creadoDesdeMovil: true,
+      state: userRegister.state,
+      town: userRegister.town,
+      gender: userRegister.gender,
+      city: userRegister.city.toString(),
       creationDate: DateTime.now(),
     );
   }

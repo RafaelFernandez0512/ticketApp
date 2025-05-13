@@ -14,6 +14,7 @@ class LoginForm extends StatelessWidget {
         children: [
           CustomTextField(
             labelText: 'Email',
+            initialValue: controller.username.value,
             onChanged: (text) => {controller.onChangeUserName(text)},
           ),
           gapH24,

@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:ticket_app/data/model/customer_address.dart';
 import 'package:ticket_app/data/model/home_viewmodel.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
 
-class CustomerAddressController extends GetxController {
+class CustomerAddressController extends GetxController
+    with StateMixin<List<CustomerAddress>> {
   final ApiService apiService = Get.find<ApiService>();
 
   @override
@@ -14,13 +14,20 @@ class CustomerAddressController extends GetxController {
     fetch();
   }
 
-  Future<void> fetch() async {}
-  Future<void> removeAddress(String id) async {
-    await apiService.removeAddress(id);
+  Future<void> fetch() async {
+    change(null, status: RxStatus.loading());
+    //var customerAddressList = await apiService.getCustomerAddress();
+    //change(customerAddressList, status: RxStatus.success());
   }
+
 
   addOrUpdate(CustomerAddress? customerAddress) {
     //navigate
     Get.toNamed(Routes.CREATE_ADDRESS, arguments: customerAddress);
+  }
+
+  Future<void> delete(CustomerAddress state) async {
+       await apiService.removeAddress(state.idCustomerAddress!);
+     await  fetch();
   }
 }

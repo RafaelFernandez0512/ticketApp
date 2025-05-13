@@ -14,9 +14,9 @@ import 'package:ticket_app/utils/notification_type.dart';
 
 class TravelsPage extends GetView<TravelsController> {
   @override
-  final TravelsController controller = Get.put(TravelsController());
+  final TravelsController controller;
   @override
-  TravelsPage({super.key});
+  TravelsPage({super.key, required this.controller});
   Map<int, String> headers = {
     0: 'Travels',
     1: 'Services',
@@ -42,17 +42,17 @@ class TravelsPage extends GetView<TravelsController> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Column(
               children: [
-                Obx(() => CustomBottomSegmentedControl<int>(
-                      children: headers.map((key, e) => MapEntry(
-                          key,
-                          CustomBottomSegmentedControlItem(
-                            icon: icons[key]!,
-                            text: e,
-                            isSelected: key == controller.serviceType.value,
-                          ))),
-                      onValueChanged: (x) => {controller.onChangeType(x)},
-                    )),
-                gapH20,
+                // Obx(() => CustomBottomSegmentedControl<int>(
+                //       children: headers.map((key, e) => MapEntry(
+                //           key,
+                //           CustomBottomSegmentedControlItem(
+                //             icon: icons[key]!,
+                //             text: e,
+                //             isSelected: key == controller.serviceType.value,
+                //           ))),
+                //       onValueChanged: (x) => {controller.onChangeType(x)},
+                //     )),
+                // gapH20,
                 Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -76,7 +76,10 @@ class TravelsPage extends GetView<TravelsController> {
                           children: [
                             Expanded(
                               child: CustomDropdown<StateModel, String>(
-                                items: controller.states.toList(),
+                                items: controller.states
+                                    .where((x) =>
+                                        x.name != controller.to?.value?.name)
+                                    .toList(),
                                 onChanged: controller.onChangedFromState,
                                 labelText: 'From State',
                                 selectedItem: controller.states
@@ -103,7 +106,10 @@ class TravelsPage extends GetView<TravelsController> {
                                 width: 3), // Espaciado entre los dos dropdowns
                             Expanded(
                               child: CustomDropdown<StateModel, String>(
-                                items: controller.states.toList(),
+                                items: controller.states
+                                    .where((x) =>
+                                        x.name != controller.from?.value?.name)
+                                    .toList(),
                                 onChanged: controller.onChangedToState,
                                 labelText: 'To State',
                                 selectedItem: controller.states
@@ -127,6 +133,7 @@ class TravelsPage extends GetView<TravelsController> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: CustomDatePicker(
+                            firstDate: DateTime.now(),
                             finalDefaultValue: controller.selectedDate?.value,
                             labelText: 'Date',
                             onChanged: (x) {
@@ -176,15 +183,18 @@ class TravelsPage extends GetView<TravelsController> {
                 gapH20,
                 controller.obx(
                     (state) => Column(
-                          children: (state as List<Travel>?)
-                                  ?.map((x) => GestureDetector(
-                                        onTap: () {
-                                          controller.tapTravel(x);
-                                        },
-                                        child: TicketView(ticket: x.toTicket()),
-                                      ))
-                                  .toList() ??
-                              [],
+                          children: state is! List<Travel>
+                              ? []
+                              : (state as List<Travel>?)
+                                      ?.map((x) => GestureDetector(
+                                            onTap: () {
+                                              controller.tapTravel(x);
+                                            },
+                                            child: TicketView(
+                                                ticket: x.toTicket()),
+                                          ))
+                                      .toList() ??
+                                  [],
                         ),
                     onLoading: Center(
                       child: Column(

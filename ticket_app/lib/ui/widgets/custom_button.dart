@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:ticket_app/utils/notification_type.dart';
 
 class CustomButton extends StatelessWidget {
@@ -7,7 +8,7 @@ class CustomButton extends StatelessWidget {
   final NotificationType? type;
   final void Function()? onPressed;
   final IconAlignment iconAlignment;
-  
+
   const CustomButton({
     super.key,
     required this.label,
@@ -25,6 +26,7 @@ class CustomButton extends StatelessWidget {
             label,
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: Colors.white,
+                  fontWeight: FontWeight.w700,
                 ),
           );
 

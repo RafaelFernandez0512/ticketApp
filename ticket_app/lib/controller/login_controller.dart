@@ -49,6 +49,7 @@ class LoginController extends GetxController with StateMixin {
         if (customer == null) {
           change(null, status: RxStatus.success());
 
+          password.value = '';
           await Get.dialog(
             AlertDialog(
               title: const Text('Alert'),
@@ -68,11 +69,11 @@ class LoginController extends GetxController with StateMixin {
       }
     } catch (e) {
       change(null, status: RxStatus.success());
+      password.value = '';
       await Get.dialog(
         AlertDialog(
-          title: const Text('Error'),
-          content: const Text(
-              'Unable to complete the operation, please try again. '),
+          title: const Text('Alert'),
+          content: const Text('Username/Password incorrect'),
           actions: [
             TextButton(
               onPressed: () => Get.back(), // Cierra el diálogo

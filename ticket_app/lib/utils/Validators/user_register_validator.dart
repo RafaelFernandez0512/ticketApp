@@ -23,6 +23,8 @@ class UserRegisterValidator extends AbstractValidator<UserRegister> {
     ruleFor((user) => user.phoneNumber, key: 'phoneNumber').must(
         (value) => value != null && value.isNotEmpty,
         'Phone number is required.');
+    ruleFor((user) => user.gender, key: 'gender').must(
+        (value) => value != null && value.isNotEmpty, 'gender is required.');
   }
 }
 
@@ -31,9 +33,7 @@ class UserRegisterAddressValidator extends AbstractValidator<UserRegister> {
     ruleFor((user) => user.addressLine1, key: 'addressLine1').must(
         (value) => value != null && value.isNotEmpty,
         'Address Line 1 is required.');
-    ruleFor((user) => user.addressLine2, key: 'addressLine2').must(
-        (value) => value != null && value.isNotEmpty,
-        'Address Line 2 is required.');
+
     ruleFor((user) => user.state, key: 'state').must(
         (value) => value != null && value.isNotEmpty, 'State is required.');
     ruleFor((user) => user.city, key: 'city')

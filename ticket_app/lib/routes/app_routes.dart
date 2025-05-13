@@ -9,5 +9,7 @@ abstract class Routes {
   static const FORGOT_PASSWORD = '/forgotPassword';
   static const CREATE_ADDRESS = '/createAddress';
   static const PAYMENT = '/payment';
-  static const MY_BOOKING_DETAIL = 'MY_BOOKING_DETAIL';
+  static const CUSTOMER_ADDRESS = '/customerAddress';
+  static const EDIT_PROFILE = '/edit-profile';
+  static const RESERVATION_DETAIL = '/reservation-detail';
 }

@@ -39,6 +39,7 @@ class ReservationForm extends StatelessWidget {
               Expanded(
                 child: CustomDropdown<Schedule, String>(
                   items: controller.schedule,
+                  enabled: false,
                   onChanged: (x) => controller.onChangeHour(controller.schedule
                       .where((y) => y.hour == x)
                       .firstOrNull),
@@ -71,11 +72,11 @@ class ReservationForm extends StatelessWidget {
           FromOrToReservationForm(
             title: 'From',
             activeState: controller.active.value,
-            addressLine1: controller.createReservation.value.fromAddressLine1,
-            addressLine2: controller.createReservation.value.fromAddressLine2,
+            addressLine1: controller.addressLine1From,
+            addressLine2: controller.addressLine2From,
             idState: controller.createReservation.value.fromSate?.idState,
             idtown: controller.createReservation.value.fromTown?.idTown,
-            zipCode: controller.createReservation.value.fromZipCode,
+            zipCode: controller.fromZipCode,
             states: controller.states,
             towns: controller.townsFrom,
             onChangedAddressLine1: (x) {
@@ -104,15 +105,17 @@ class ReservationForm extends StatelessWidget {
             onChangedCustomerAddress: (x) {
               controller.onFromCustomerAddress(x);
             },
+            disableAddress: controller.disableAddress.value,
+            cleanCustomerAddress: () => controller.cleanCustomerAddressFrom(),
           ),
           gapH20,
           FromOrToReservationForm(
             title: 'To',
-            addressLine1: controller.createReservation.value.toAddressLine1,
-            addressLine2: controller.createReservation.value.toAddressLine2,
+            addressLine1: controller.toAddressLine1,
+            addressLine2: controller.toAddressLine2,
             idState: controller.createReservation.value.toState?.idState,
             idtown: controller.createReservation.value.toTown?.idTown,
-            zipCode: controller.createReservation.value.toZipCode,
+            zipCode: controller.toZipCode,
             states: controller.states,
             activeState: controller.active.value,
             towns: controller.townsTo,
@@ -142,6 +145,8 @@ class ReservationForm extends StatelessWidget {
             onChangedCustomerAddress: (x) {
               controller.onToCustomerAddress(x);
             },
+            disableAddress: controller.disableAddressTo.value,
+            cleanCustomerAddress: () => controller.cleanCustomerAddressTo(),
           ),
           gapH12,
           ItemCount(
@@ -182,33 +187,34 @@ class FromOrToReservationForm extends StatelessWidget {
   final Function(String) onChangedZipCode;
   final Function(CustomerAddress?) onChangedCustomerAddress;
   final bool disableAddress;
+  final VoidCallback? cleanCustomerAddress;
 
   final Function(City?) onChangedCity;
 
-  const FromOrToReservationForm({
-    super.key,
-    required this.title,
-    required this.addressLine1,
-    required this.addressLine2,
-    required this.idState,
-    required this.idtown,
-    required this.states,
-    required this.towns,
-    required this.onChangedAddressLine1,
-    required this.onChangedAddressLine2,
-    required this.onChangedState,
-    required this.onChangedTown,
-    required this.onChangedZipCode,
-    required this.zipCode,
-    required this.city,
-    required this.cities,
-    required this.onChangedCity,
-    required this.idCustomerAddress,
-    required this.customerAddress,
-    required this.onChangedCustomerAddress,
-    this.activeState = true,
-    this.disableAddress = false,
-  });
+  const FromOrToReservationForm(
+      {super.key,
+      required this.title,
+      required this.addressLine1,
+      required this.addressLine2,
+      required this.idState,
+      required this.idtown,
+      required this.states,
+      required this.towns,
+      required this.onChangedAddressLine1,
+      required this.onChangedAddressLine2,
+      required this.onChangedState,
+      required this.onChangedTown,
+      required this.onChangedZipCode,
+      required this.zipCode,
+      required this.city,
+      required this.cities,
+      required this.onChangedCity,
+      required this.idCustomerAddress,
+      required this.customerAddress,
+      required this.onChangedCustomerAddress,
+      this.activeState = true,
+      this.disableAddress = false,
+      this.cleanCustomerAddress});
 
   @override
   Widget build(BuildContext context) {
@@ -244,6 +250,43 @@ class FromOrToReservationForm extends StatelessWidget {
                   return '${item!["Name"]}';
                 },
               ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: CustomDropdown<CustomerAddress, int?>(
+                      items: customerAddress,
+                      onChanged: (x) {
+                        onChangedCustomerAddress(customerAddress
+                            .where((y) => y.idCustomerAddress == x)
+                            .firstOrNull);
+                      },
+                      labelText: 'Previous Addresses',
+                      selectedItem: customerAddress
+                          .where(
+                              (x) => x.idCustomerAddress == idCustomerAddress)
+                          .firstOrNull
+                          ?.idCustomerAddress,
+                      showSearchBox: true,
+                      textEditingController: TextEditingController(),
+                      valueProperty: "Id_CustomerAddress",
+                      labelProperty: "FullAddress",
+                      labelBuilder: (item) {
+                        return '${item!["FullAddress"]}';
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: idCustomerAddress != null,
+                    child: IconButton(
+                        onPressed: cleanCustomerAddress,
+                        icon: const Icon(
+                          Icons.clear,
+                          color: Colors.red,
+                        )),
+                  ),
+                ],
+              ),
               CustomDropdown<City, int?>(
                 items: cities,
                 onChanged: (x) async {
@@ -251,6 +294,7 @@ class FromOrToReservationForm extends StatelessWidget {
                       cities.where((y) => y.idCity == x).firstOrNull);
                 },
                 labelText: 'City',
+                enabled: !disableAddress,
                 selectedItem:
                     cities.where((x) => x.idCity == city).firstOrNull?.idCity,
                 showSearchBox: true,
@@ -266,10 +310,11 @@ class FromOrToReservationForm extends StatelessWidget {
                 onChanged: (x) {
                   onChangedTown(towns.where((y) => y.idTown == x).firstOrNull);
                 },
-                selectedItem: towns.isEmpty
+                selectedItem: towns.isNotEmpty
                     ? towns.where((x) => x.idTown == idtown).firstOrNull?.idTown
                     : null,
                 labelText: 'Town',
+                enabled: !disableAddress,
                 showSearchBox: true,
                 textEditingController: TextEditingController(),
                 valueProperty: "Id_Town",
@@ -278,43 +323,27 @@ class FromOrToReservationForm extends StatelessWidget {
                   return '${item!["Name"]}';
                 },
               ),
-              CustomDropdown<CustomerAddress, int?>(
-                items: customerAddress,
-                onChanged: (x) {
-                  onChangedCustomerAddress(customerAddress
-                      .where((y) => y.idCustomerAddress == x)
-                      .firstOrNull);
-                },
-                labelText: 'Customer address',
-                selectedItem: customerAddress
-                    .where((x) => x.idCustomerAddress == idCustomerAddress)
-                    .firstOrNull
-                    ?.idCustomerAddress,
-                showSearchBox: true,
-                textEditingController: TextEditingController(),
-                valueProperty: "Id_CustomerAddress",
-                labelProperty: "Name",
-                labelBuilder: (item) {
-                  return '${item!["Name"]}';
-                },
-              ),
               CustomTextField(
+                  controller: TextEditingController(text: addressLine1),
                   readOnly: disableAddress,
-                  initialValue: addressLine1,
                   keyboard: TextInputType.streetAddress,
                   labelText: 'Address Line 1',
+                  maxLength: 250,
                   onChanged: onChangedAddressLine1),
               CustomTextField(
                   readOnly: disableAddress,
-                  initialValue: addressLine2,
                   keyboard: TextInputType.streetAddress,
                   labelText: 'Address Line 2',
+                       maxLength: 250,
+                  controller: TextEditingController(text: addressLine2),
                   onChanged: onChangedAddressLine2),
               CustomTextField(
+                readOnly: disableAddress,
                 labelText: 'Zip Code',
+                
                 maxLength: 5,
+                controller: TextEditingController(text: zipCode),
                 onChanged: onChangedZipCode,
-                initialValue: zipCode,
               ),
             ],
           ),

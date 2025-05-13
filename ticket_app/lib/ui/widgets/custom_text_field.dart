@@ -5,6 +5,7 @@ import 'package:ticket_app/utils/gaps.dart';
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
+  final String hintText;
   final TextStyle? labelStyle;
   final String? initialValue;
   final bool fullWidth;
@@ -28,6 +29,7 @@ class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
     required this.labelText,
+    this.hintText = "",
     this.labelStyle = null,
     this.initialValue,
     this.fullWidth = true,
@@ -111,6 +113,11 @@ class CustomTextField extends StatelessWidget {
                   InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     errorText: errorMessage,
+                    hintText: hintText,
+                    hintStyle: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: const Color(0xFFB7B7B7)),
                     counterText: !showCounter ? "" : null,
                     fillColor: (readOnly ?? false)
                         ? const Color(0xFFDCDEDF)

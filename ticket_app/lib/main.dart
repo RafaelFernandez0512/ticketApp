@@ -15,6 +15,8 @@ void main() async {
   await initServices();
   runApp(Sizer(builder: (p0, p1, p2) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false, // Oculta el label de debug
+
       getPages: AppPages.pages,
       theme: CustomTheme.lightTheme,
       builder: EasyLoading.init(), // Inicializa EasyLoading aquí

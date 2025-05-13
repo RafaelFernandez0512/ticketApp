@@ -17,7 +17,13 @@ class CreateUserRequest {
   final bool? status;
   final String? emergencyContact;
   final String? contactPhoneNumber;
-  final bool? creadoDesdeMovil;
+  final bool? creadoDesdeMovil = true;
+  final String? gender; 
+  final String? state;
+  final String? city; 
+  final int? town; 
+  final int? country; 
+  final int? customerType = 1002;
 
   CreateUserRequest({
     this.firstName,
@@ -38,7 +44,11 @@ class CreateUserRequest {
     this.status,
     this.emergencyContact,
     this.contactPhoneNumber,
-    this.creadoDesdeMovil,
+    this.gender,
+    this.state,
+    this.city,
+    this.town,
+    this.country,
   });
 
   factory CreateUserRequest.fromJson(Map<String, dynamic> json) {
@@ -61,7 +71,6 @@ class CreateUserRequest {
       status: json['Status'],
       emergencyContact: json['EmergencyContact'],
       contactPhoneNumber: json['ContactPhoneNumber'],
-      creadoDesdeMovil: json['CreadoDesdeMovil'],
     );
   }
 
@@ -86,31 +95,37 @@ class CreateUserRequest {
       'EmergencyContact': emergencyContact,
       'ContactPhoneNumber': contactPhoneNumber,
       'CreadoDesdeMovil': creadoDesdeMovil,
+      'Gender': gender, // Nuevo campo
+      'State': state, // Nuevo campo
+      'City': city, // Nuevo campo
+      'Town': town, // Nuevo campo
+      'Country': country, // Nuevo campo
+      'CustomerType': customerType, // Nuevo campo
     };
   }
 }
 
 class Customer {
-  final int idCustomer;
-  final DateTime? birthday;
-  final DateTime? creationDate;
-  final String? fullName;
-  final String? firstName;
-  final String? middleName;
-  final String? lastName;
-  final String? email;
-  final String? password;
-  final String? confirmPassword;
-  final String? phoneNumber;
-  final String? mobile;
-  final String? addressLine1;
-  final String? addressLine2;
-  final String? zipCode;
-  final String? photo;
-  final bool? status;
-  final String? emergencyContact;
-  final String? contactPhoneNumber;
-  final bool? creadoDesdeMovil;
+  int idCustomer;
+  DateTime? birthday;
+  DateTime? creationDate;
+  String? fullName;
+  String? firstName;
+  String? middleName;
+  String? lastName;
+  String? email;
+  String? password;
+  String? confirmPassword;
+  String? phoneNumber;
+  String? mobile;
+  String? addressLine1;
+  String? addressLine2;
+  String? zipCode;
+  String? photo;
+  bool? status;
+  String? emergencyContact;
+  String? contactPhoneNumber;
+  bool? creadoDesdeMovil;
 
   Customer({
     required this.idCustomer,

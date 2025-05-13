@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/reservation.dart';
+import 'package:ticket_app/ui/reservations/payment_sheet_modal.dart';
 import 'package:ticket_app/ui/widgets/LayoutBuilderWidget.dart';
 import 'package:ticket_app/ui/widgets/circle_shape.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
@@ -11,8 +12,9 @@ import 'package:ticket_app/utils/utils.dart';
 
 class MyTicketReservationView extends StatelessWidget {
   final Reservation ticket;
-
-  const MyTicketReservationView({super.key, required this.ticket});
+  final void Function()? onTapPayment;
+  const MyTicketReservationView(
+      {super.key, required this.ticket, required this.onTapPayment});
 
   @override
   Widget build(
@@ -23,6 +25,18 @@ class MyTicketReservationView extends StatelessWidget {
       color: Colors.white,
       child: Column(
         children: [
+          if (ticket.status?.idReservationStatus == 'CO')
+            Column(
+              children: [
+                Text('Pending to pay',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700, color: Colors.redAccent)),
+                Divider(
+                  color: Colors.redAccent,
+                  thickness: 2,
+                )
+              ],
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
             child: Row(
@@ -340,8 +354,7 @@ class MyTicketReservationView extends StatelessWidget {
                   ),
                 ),
                 const Divider(),
-                status(context, ticket.status?.idReservationStatus ?? '',
-                    ticket.status?.description ?? ''),
+                status(context, ticket),
               ],
             ),
           ),
@@ -350,8 +363,8 @@ class MyTicketReservationView extends StatelessWidget {
     );
   }
 
-  Widget status(BuildContext context, String status, String description) {
-    switch (status) {
+  Widget status(BuildContext context, Reservation reservation) {
+    switch (reservation.status?.idReservationStatus) {
       case 'CA':
         return Text('Canceled',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -367,16 +380,16 @@ class MyTicketReservationView extends StatelessWidget {
                     Icons.payments,
                     color: Colors.white,
                   ),
-                  onPressed: () {}),
+                  onPressed: onTapPayment),
             ),
           ],
         );
       case 'PA':
         return Text('PAID',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700, color: CustomTheme.secondColor));
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700, color: Color(0xFF60C664)));
       default:
-        return Text(description,
+        return Text(reservation.status?.description ?? '',
             style: Theme.of(context)
                 .textTheme
                 .titleMedium

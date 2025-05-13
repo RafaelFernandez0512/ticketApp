@@ -39,12 +39,19 @@ List<Map<String, dynamic>> buildItemsMap<T>(
 
   return result;
 }
-  String formatDate(String date) {
-    DateTime parsedDate = DateTime.parse(date);
-    return DateFormat('yyyy-MM-dd').format(parsedDate); // Formato YYYY-MM-DD
-  }
 
-  String formatTime(String date) {
-    DateTime parsedDate = DateTime.parse(date);
-    return DateFormat('hh:mm a').format(parsedDate); // Formato 12h con AM/PM
+String formatDate(String date) {
+  DateTime parsedDate = DateTime.parse(date);
+  return DateFormat('MM-dd-yyyy').format(parsedDate); // Formato YYYY-MM-DD
+}
+
+String formatTime(String date) {
+  DateTime parsedDate = DateTime.parse(date);
+  return DateFormat('hh:mm a').format(parsedDate); // Formato 12h con AM/PM
+}
+
+extension DateTimeExtensions on DateTime {
+  bool isSameDate(DateTime other) {
+    return year == other.year && month == other.month && day == other.day;
   }
+}

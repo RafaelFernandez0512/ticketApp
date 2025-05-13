@@ -1,4 +1,7 @@
 import 'package:ticket_app/data/model/city.dart';
+import 'package:ticket_app/data/model/customer.dart';
+import 'package:ticket_app/data/model/payment.dart';
+import 'package:ticket_app/data/model/payment_response.dart';
 import 'package:ticket_app/data/model/reservation_status.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
@@ -29,6 +32,8 @@ class Reservation {
   final Town? townTo;
   final Travel? travel;
   final ReservationStatus? status;
+  final Customer? customer;
+  List<PaymentResponse> payment;
 
   Reservation({
     required this.reservationNumber,
@@ -55,6 +60,8 @@ class Reservation {
     required this.townTo,
     required this.travel,
     required this.status,
+    required this.customer,
+    required this.payment,
   });
 
 // Factory method to create a Reservation object from JSON
@@ -62,7 +69,7 @@ class Reservation {
     return Reservation(
       reservationNumber: json['ReservationNumber'] as int,
       departureDate: json['DepartureDate'] != null
-          ? DateTime.parse(json['DepartureDate'] as String)
+          ? DateTime.parse(json['DepartureDate'] as String).toLocal()
           : null,
       departureDateFilter: json['DepartureDateFilter'] != null
           ? DateTime.parse(json['DepartureDateFilter'] as String)
@@ -98,6 +105,12 @@ class Reservation {
       status: json['ReservationStatus'] != null
           ? ReservationStatus.fromJson(json['ReservationStatus'])
           : null,
+      customer:
+          json['Customer'] != null ? Customer.fromJson(json['Customer']) : null,
+      payment: (json['Payments'] as List<dynamic>?)
+              ?.map((e) => PaymentResponse.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 

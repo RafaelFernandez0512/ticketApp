@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
-import 'package:sizer/sizer.dart';
 import 'package:ticket_app/controller/home_controller.dart';
-import 'package:ticket_app/controller/login_controller.dart';
+import 'package:ticket_app/controller/my_bookings_controller.dart';
+import 'package:ticket_app/controller/reservations_controller.dart';
+import 'package:ticket_app/controller/settings_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
-import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/ui/reservations/my_bookings_page.dart';
 import 'package:ticket_app/ui/reservations/travels_page.dart';
 import 'package:ticket_app/ui/setting/settings_page.dart';
-import 'package:ticket_app/ui/widgets/custom_button.dart';
-import 'package:ticket_app/ui/Authentication/components/login_form.dart';
-import 'package:ticket_app/utils/gaps.dart';
 
 class HomePage extends GetView<HomeController> {
-  const HomePage({super.key});
+  HomePage({super.key});
+  var travelController = Get.find<TravelsController>();
+  var reservationController = Get.find<MyBookingsController>();
+  var settingsController = Get.find<SettingsController>();
 
   @override
   Widget build(BuildContext context) {
@@ -25,27 +25,45 @@ class HomePage extends GetView<HomeController> {
       home: PersistentTabView(
         tabs: [
           PersistentTabConfig(
-            screen: TravelsPage(),
-            item: ItemConfig(
-              icon: Icon(Icons.home),
-              title: "Travels",
+            screen: TravelsPage(
+              controller: travelController,
             ),
+            item: ItemConfig(
+                icon: Icon(Icons.home),
+                title: "Travels",
+                activeForegroundColor: Colors.white),
           ),
           PersistentTabConfig(
-            screen: MyBookingsPage(),
-            item: ItemConfig(
-              icon: Icon(Icons.message),
-              title: "My Bookings",
+            screen: MyBookingsPage(
+              controller: reservationController,
             ),
+            item: ItemConfig(
+                activeColorSecondary: Colors.white,
+                icon: Icon(Icons.message),
+                title: "My Bookings",
+                activeForegroundColor: Colors.white),
           ),
           PersistentTabConfig(
-            screen: SettingsPage(),
-            item: ItemConfig(
-              icon: Icon(Icons.settings),
-              title: "Settings",
+            screen: SettingsPage(
+              controller: settingsController,
             ),
+            item: ItemConfig(
+                icon: Icon(Icons.settings),
+                title: "Settings",
+                activeForegroundColor: Colors.white),
           ),
         ],
+        onTabChanged: (index) async {
+          await Future.delayed(Duration.zero, () async {
+            if (index == 0) {
+              await travelController.onSearch();
+            } else if (index == 1) {
+              await reservationController.fetch();
+            } else if (index == 2) {
+              await settingsController.loadData();
+            }
+          });
+        },
         navBarBuilder: (navBarConfig) => Style1BottomNavBar(
           navBarConfig: navBarConfig,
           navBarDecoration: NavBarDecoration(

@@ -23,7 +23,7 @@ class SignUpPage extends GetView<SignUpController> {
         leading: BackButton(
           color: Colors.white,
           onPressed: () {
-            Navigator.of(context).pop();
+            controller.backStep();
           },
         ),
       ),
@@ -38,10 +38,11 @@ class SignUpPage extends GetView<SignUpController> {
                       Column(
                         children: [
                           EasyStepper(
-                              lineStyle: LineStyle(lineLength: 35.sp),
+                              lineStyle: LineStyle(lineLength: 50.sp),
                               activeStep: controller.activeStep.value,
                               showLoadingAnimation: false,
                               stepShape: StepShape.rRectangle,
+                              finishedStepTextColor: Colors.grey,
                               finishedStepBackgroundColor: Color(0xfFF5733),
                               steps: const [
                                 EasyStep(
@@ -65,21 +66,6 @@ class SignUpPage extends GetView<SignUpController> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Visibility(
-                                visible: controller.activeStep.value != 0,
-                                child: CustomButton(
-                                  onPressed: () => controller.backStep(),
-                                  label: controller.activeStep.value == 0
-                                      ? 'Cancel'
-                                      : 'Back',
-                                  icon: const Icon(
-                                    Icons.arrow_back,
-                                    color: Colors.white,
-                                  ),
-                                  type: NotificationType.error,
-                                  iconAlignment: IconAlignment.start,
-                                ),
-                              ),
                               gapW16,
                               CustomButton(
                                 onPressed: () async =>
@@ -163,6 +149,11 @@ class SignUpPage extends GetView<SignUpController> {
               onChangedTown: controller.onChangeTown,
               onChangedCity: controller.onChangeCity,
               onChangedZipCode: controller.onChangeZipCode,
+              state: controller.userRegister.value.state ?? '',
+              city: controller.userRegister.value.city ?? 0,
+              town: controller.userRegister.value.town ?? 0,
+              addressLine1: controller.userRegister.value.addressLine1 ?? '',
+              addressLine2: controller.userRegister.value.addressLine2 ?? '',
             ),
             gapH20,
           ],

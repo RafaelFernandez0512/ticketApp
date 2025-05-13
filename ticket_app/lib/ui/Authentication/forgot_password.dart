@@ -18,7 +18,11 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Forgot Password'),
+        title: Text(
+            !controller.requiredCurrentPassword.value
+                ? 'Forgot Password'
+                : 'Change Password',
+            style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         leading: BackButton(
           color: Colors.white,
@@ -62,6 +66,7 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
                                 ),
                               ]),
                           _buildStepContent(controller.activeStep.value),
+                          gapH30,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -111,11 +116,20 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
         return Column(
           children: [
             CustomTextField(
+              readOnly: controller.requiredCurrentPassword.value,
               labelText: 'Email',
               initialValue: controller.forgotPasswordModel.value.email,
               onChanged: (text) => {controller.onChangeEmail(text)},
             ),
-            gapH30
+            gapH16,
+            if (controller.forgotPasswordModel.value.email != null &&
+                controller.requiredCurrentPassword.value)
+              CustomTextField(
+                labelText: 'Password',
+                obscureText: true,
+                initialValue: controller.password.value,
+                onChanged: (text) => {controller.onchangePassword(text)},
+              ),
           ],
         );
       case 1:
@@ -139,12 +153,12 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
             gapH20,
             CustomTextField(
               labelText: 'Password',
-              onChanged: (text) => {controller.onChangeEmail(text)},
+              onChanged: (text) => {controller.onchangePassword(text)},
             ),
             gapH20,
             CustomTextField(
               labelText: 'Confirm Password',
-              onChanged: (text) => {controller.onChangeEmail(text)},
+              onChanged: (text) => {controller.onchangeConfirmPassword(text)},
             ),
             gapH30,
           ],

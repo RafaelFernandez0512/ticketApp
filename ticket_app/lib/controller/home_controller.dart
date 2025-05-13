@@ -1,3 +1,4 @@
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
@@ -13,8 +14,7 @@ class HomeController extends GetxController with StateMixin<HomeViewModel> {
   @override
   void onInit() {
     super.onInit();
-    fetch();
   }
 
-  Future<void> fetch() async {}
+
 }

@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/my_bookings_controller.dart';
 import 'package:ticket_app/ui/reservations/my_reservation/my_ticket_reservation_view.dart';
-import 'package:ticket_app/ui/widgets/custom_bottom_segmented_control.dart';
-import 'package:ticket_app/ui/widgets/custom_bottom_segmented_item.dart';
 
 class MyBookingsPage extends GetView<MyBookingsController> {
   @override
-  final MyBookingsController controller = Get.find<MyBookingsController>();
-  MyBookingsPage({super.key});
+  final MyBookingsController controller;
+  MyBookingsPage({super.key, required this.controller});
   Map<int, String> headers = {
     0: 'Travels',
     1: 'Services',
@@ -60,10 +58,14 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                           ),
                         ),
                         child: EasyDateTimeLinePicker(
-                          firstDate: DateTime.now(),
+                          firstDate:
+                              DateTime.now().subtract(const Duration(days: 90)),
                           lastDate: DateTime(2030, 3, 18),
+                          currentDate: controller.selectedDate?.value,
                           focusedDate: DateTime.now(),
-                          onDateChange: (selectedDate) {},
+                          onDateChange: (selectedDate) async {
+                            await controller.onChangeDate(selectedDate);
+                          },
                         ),
                       ),
                       const Divider(),
@@ -72,8 +74,17 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                           child: ListView.builder(
                             itemCount: state!.length,
                             itemBuilder: (context, index) {
-                              return MyTicketReservationView(
-                                ticket: state[index],
+                              return GestureDetector(
+                                onTap: () {
+                                  controller.onTap(index);
+                                },
+                                child: MyTicketReservationView(
+                                  ticket: state[index],
+                                  onTapPayment: () async {
+                                    await controller.onPayment(
+                                        context, state[index]);
+                                  },
+                                ),
                               );
                             },
                           ),

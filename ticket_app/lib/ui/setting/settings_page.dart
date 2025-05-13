@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_app/controller/settings_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
+import 'package:ticket_app/routes/app_pages.dart';
+import 'package:ticket_app/utils/gaps.dart';
 
-class SettingsPage extends StatelessWidget {
-  final SettingsController controller = Get.find<SettingsController>();
-  SettingsPage({super.key});
+class SettingsPage extends GetView<SettingsController> {
+  @override
+  final SettingsController controller;
+  const SettingsPage({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -19,98 +25,107 @@ class SettingsPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(
-              children: [
-                // Foto de perfil circular
-                CircleAvatar(
-                    radius: 50,
-                    backgroundColor: CustomTheme.primaryLightColor,
-                    child: Icon(
-                      Icons.person,
-                      size: 50,
-                      color: CustomTheme.white,
-                    )),
-                const SizedBox(height: 16),
-                Text(
-                  'John Doe', // Nombre del usuario
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'johndoe@example.com', // Email del usuario
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 32),
-
-                // Opciones de configuración
-
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text('Edit Profile'),
-                  onTap: () {
-                    // Navegar a la pantalla de edición de perfil
-                    Get.toNamed('/edit-profile');
-                  },
-                ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.lock),
-                  title: const Text('Change Password'),
-                  onTap: () {
-                    // Navegar a la pantalla de cambio de contraseña
-                    Get.toNamed('/change-password');
-                  },
-                ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.credit_card),
-                  title: const Text('Customer Address'),
-                  onTap: () {
-                    // Navegar a la pantalla de tarjetas de crédito
-                    Get.toNamed('/credit-cards');
-                  },
-                ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(
-                    Icons.logout,
-                    color: Colors.red,
-                  ),
-                  title: const Text('Log Out'),
-                  textColor: Colors.red,
-                  titleTextStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.red, fontWeight: FontWeight.w700),
-                  onTap: () {
-                    // Lógica para cerrar sesión
-                    Get.dialog(
-                      AlertDialog(
-                        title: const Text('Log Out'),
-                        content:
-                            const Text('Are you sure you want to log out?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Get.back(),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              // Cerrar sesión y navegar a la pantalla de inicio de sesión
-                              Get.offAllNamed('/login');
-                            },
-                            child: const Text('Log Out'),
-                          ),
-                        ],
+          child: GetBuilder(
+              init: controller,
+              builder: (_) {
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Column(
+                    children: [
+                      // Foto de perfil circular
+                      Center(
+                        child: controller.photo?.value != null
+                            ? Obx(
+                                () => CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage:
+                                      MemoryImage(controller.photo!.value),
+                                ),
+                              )
+                            : CircleAvatar(
+                                radius: 50,
+                                backgroundColor: CustomTheme.primaryLightColor,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: CustomTheme.white,
+                                ),
+                              ),
                       ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+                      gapH16,
+                      Obx(() => Text(
+                            controller.name.value, // Nombre del usuario
+                            style: Theme.of(context).textTheme.titleLarge,
+                          )),
+                      gapH12,
+                      Obx(() => Text(
+                            controller.email.value, // Email del usuario
+                            style: Theme.of(context).textTheme.titleMedium,
+                          )),
+                      const SizedBox(height: 32),
+
+                      // Opciones de configuración
+
+                      ListTile(
+                        leading: const Icon(Icons.edit),
+                        title: const Text('Edit Profile'),
+                        onTap: () {
+                          // Navegar a la pantalla de edición de perfil
+                          Get.toNamed(Routes.EDIT_PROFILE);
+                        },
+                      ),
+                      const Divider(),
+                      ListTile(
+                        leading: const Icon(Icons.lock),
+                        title: const Text('Change Password'),
+                        onTap: () {
+                          // Navegar a la pantalla de cambio de contraseña
+                          Get.toNamed(Routes.FORGOT_PASSWORD);
+                        },
+                      ),
+
+                      const Divider(),
+                      ListTile(
+                        leading: const Icon(
+                          Icons.logout,
+                          color: Colors.red,
+                        ),
+                        title: const Text('Log Out'),
+                        textColor: Colors.red,
+                        titleTextStyle: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(
+                                color: Colors.red, fontWeight: FontWeight.w700),
+                        onTap: () {
+                          // Lógica para cerrar sesión
+                          Get.dialog(
+                            AlertDialog(
+                              title: const Text('Log Out'),
+                              content: const Text(
+                                  'Are you sure you want to log out?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Get.back(),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await Get.find<SharedPreferences>().clear();
+                                    await Get.offAllNamed('/login');
+                                  },
+                                  child: const Text('Log Out'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }),
         ),
       ),
     );

@@ -12,20 +12,26 @@ class Company {
   final int membershipSequence;
   final bool status;
 
-  Company({
-    required this.idCompany,
-    required this.name,
-    required this.phoneNumber,
-    required this.email,
-    required this.url,
-    required this.addressLine1,
-    this.addressLine2,
-    required this.zipCode,
-    required this.travelSequence,
-    required this.reservationSequence,
-    required this.membershipSequence,
-    required this.status,
-  });
+  final String? stripeApi;
+  final String? stripeKey;
+  final String? stripePublishableKey;
+
+  Company(
+      {required this.idCompany,
+      required this.name,
+      required this.phoneNumber,
+      required this.email,
+      required this.url,
+      required this.addressLine1,
+      this.addressLine2,
+      required this.zipCode,
+      required this.travelSequence,
+      required this.reservationSequence,
+      required this.membershipSequence,
+      required this.status,
+      this.stripeApi,
+      this.stripeKey,
+      this.stripePublishableKey});
 
   // Método para convertir un JSON en un objeto Company
   factory Company.fromJson(Map<String, dynamic> json) {

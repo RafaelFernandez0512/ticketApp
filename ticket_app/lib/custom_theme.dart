@@ -31,7 +31,7 @@ class CustomTheme {
         color: primaryLightColor,
       ),
       titleLarge: TextStyle(
-          fontSize: 16, fontWeight: FontWeight.w400, color: primaryLightColor),
+          fontSize: 20, fontWeight: FontWeight.w600, color: primaryLightColor),
       bodySmall: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w400,
@@ -107,7 +107,6 @@ class CustomTheme {
       centerTitle: true,
       backgroundColor: primaryLightColor,
       scrolledUnderElevation: 1,
-     
       titleTextStyle: TextStyle(
         fontWeight: FontWeight.w500,
         color: white,
