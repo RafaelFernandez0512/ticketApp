@@ -133,17 +133,17 @@ class RegisterClientForm extends StatelessWidget {
               finalDefaultValue: controller.userRegister.value.birthday,
               onChanged: controller.onChangeDateOfBirth)),
           CustomTextField(
-              initialValue: controller.userRegister.value.email,
-              keyboard: TextInputType.emailAddress,
-              labelText: 'Email',
-              maxLength: 100,
-              onChanged: controller.onChangeEmail),
-          CustomTextField(
               initialValue: controller.userRegister.value.phoneNumber,
               keyboard: TextInputType.phone,
               labelText: 'Phone Number',
               maxLength: 12,
               onChanged: controller.onChangePhoneNumber),
+          CustomTextField(
+              initialValue: controller.userRegister.value.email,
+              keyboard: TextInputType.emailAddress,
+              labelText: 'Email (Username)',
+              maxLength: 100,
+              onChanged: controller.onChangeEmail),
           Row(
             children: [
               Expanded(
