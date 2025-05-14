@@ -47,6 +47,7 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                             // return the background color of the normal current day
                             return Colors.black;
                           }),
+                          
                           currentDayShape:
                               const WidgetStatePropertyAll(CircleBorder()),
                           dayShape:

@@ -24,9 +24,10 @@ class LoginPage extends GetView<LoginController> {
             child: controller.obx((state) {
               return Column(
                 children: [
+                  gapH16,
                   SizedBox(
                     child: Image.asset('assets/logodoortodoor.png'),
-                    height: 60.sp,
+                    height: 50.sp,
                   ),
                   gapH20,
                   gapH12,

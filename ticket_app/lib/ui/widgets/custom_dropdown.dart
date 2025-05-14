@@ -162,7 +162,7 @@ class CustomDropdown<T, K> extends StatelessWidget {
         onChanged: enabled ? onChanged : null,
         buttonStyleData: ButtonStyleData(
           //padding: const EdgeInsets.symmetric(horizontal: 0),
-          height: 30.sp,
+          height: 50,
           width: 200.sp,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
           decoration: BoxDecoration(
@@ -200,7 +200,7 @@ class CustomDropdown<T, K> extends StatelessWidget {
                 searchController: textEditingController,
                 searchInnerWidgetHeight: 50.sp,
                 searchInnerWidget: Container(
-                  height: 35.sp,
+                  height: 80,
                   padding: EdgeInsets.all(4.sp),
                   child: TextFormField(
                       expands: true,
