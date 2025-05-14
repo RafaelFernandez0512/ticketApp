@@ -30,10 +30,12 @@ class TravelsController extends GetxController with StateMixin {
 
   onChangedFromState(String? idstate) {
     from = states.firstWhere((element) => element.idState == idstate).obs;
+    update();
   }
 
   onChangedToState(String? idstate) {
     to = states.firstWhere((element) => element.idState == idstate).obs;
+    update();
   }
 
   void onChangedDate(DateTime? date) {
