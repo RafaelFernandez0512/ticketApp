@@ -64,6 +64,7 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                           // The height is not required in this case.
                           height: 64.0,
                         ),
+                        
                         itemBuilder: (
                           BuildContext context,
                           DateTime date,
@@ -86,6 +87,16 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  Flexible(
+                                    child: Text(
+                                      EasyDateFormatter.shortMonthName(
+                                          date, "en_US"),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: isSelected ? Colors.white : null,
+                                      ),
+                                    ),
+                                  ),
                                   Flexible(
                                     child: Text(
                                       date.day.toString(),

@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:fluent_validation/models/validation_result.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,11 +12,13 @@ import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
 import 'package:ticket_app/ui/widgets/custom_text_field.dart';
+import 'package:ticket_app/utils/Validators/user_register_validator%20copy.dart';
 import 'package:ticket_app/utils/gaps.dart';
 
 class EditProfileController extends GetxController with StateMixin<Customer?> {
   Rx<Customer?>? customerRx;
   var apiService = Get.find<ApiService>();
+
   @override
   void onInit() async {
     super.onInit();
@@ -44,11 +48,49 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
   }
 
   save() async {
-    if (customerRx?.value != null) {
-      var customer = customerRx?.value;
-      await apiService.updateCustomer(customer!);
-      Get.back();
+    EasyLoading.show(status: 'loading...');
+    try {
+      if (customerRx?.value != null) {
+        if (!await validUser()) {
+          return;
+        }
+        var customer = customerRx?.value;
+        var value = await apiService.updateCustomer(customer!);
+        if (value) {
+          EasyLoading.dismiss();
+          Get.back();
+        }
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      EasyLoading.dismiss();
     }
+  }
+
+  Future<bool> validUser() async {
+    ;
+    final UpdateCustemerValidator userValidator = UpdateCustemerValidator();
+    final ValidationResult validationResult =
+        userValidator.validate(customerRx!.value!);
+
+    if (validationResult.hasError) {
+      EasyLoading.dismiss();
+      Get.dialog(AlertDialog(
+        title: const Text('Alert'),
+        content: Text(validationResult.errors
+            .map((x) => '${x.key} ${x.message}')
+            .join('\n')),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Close'),
+          ),
+        ],
+      ));
+      return false;
+    }
+    return true;
   }
 
   deleteAccount() async {
@@ -89,8 +131,8 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
               final password = customerRx?.value?.password;
 
               if (username != null && password != null) {
-                var auth = await Get.find<AuthService>()
-                    .authenticate(username, password);
+                var auth =
+                    await Get.find<AuthService>().verify(username, password);
                 if (auth == '' || auth.isEmpty) {
                   await Get.dialog(
                     AlertDialog(
@@ -106,8 +148,7 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
                   );
                   return;
                 }
-                final success =
-                    await apiService.deleteAccount(username, password);
+                final success = await apiService.deleteAccount(username);
                 if (success) {
                   Get.back(); // Cierra el diálogo
                   Get.showSnackbar(const GetSnackBar(
@@ -164,5 +205,32 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
 
   void onChangeAddressLine2(String addressLine2) {
     customerRx?.value?.addressLine2 = addressLine2;
+  }
+
+  void onChangeState(String? p1) {
+    customerRx!.update((val) {
+      val!.state = p1;
+      val.town = null;
+      val.city = null;
+    });
+  }
+
+  void onChangeTown(int? p1) {
+    customerRx!.update((val) {
+      val!.town = p1;
+    });
+  }
+
+  void onChangeCity(int? p1) {
+    customerRx!.update((val) {
+      val!.city = p1;
+      val.town = null;
+    });
+  }
+
+  onChangeZipCode(String p1) {
+    customerRx!.update((val) {
+      val!.zipCode = p1;
+    });
   }
 }

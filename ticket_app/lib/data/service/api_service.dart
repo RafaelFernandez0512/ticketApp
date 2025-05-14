@@ -322,7 +322,8 @@ class ApiService extends GetxService {
   }
 
   Future<Customer?> getCustomer(String username) async {
-    var queryParams = "\$filter=email eq '$username'";
+    var queryParams =
+        "\$filter=email eq '$username'&\$expand=Town,City,State,Gender,CustomerType,Country";
     final response = await http.get(
       Uri.parse('$_baseUrl/api/odata/Customer?$queryParams'),
       headers: {
@@ -683,7 +684,7 @@ class ApiService extends GetxService {
     }
   }
 
-  updateCustomer(Customer customer) async {
+ Future<bool> updateCustomer(Customer customer) async {
     final response = await http.put(
       Uri.parse('$_baseUrl/api/odata/Customer(${customer.idCustomer})'),
       headers: {
@@ -694,12 +695,24 @@ class ApiService extends GetxService {
     );
 
     if (response.statusCode == 200 || response.statusCode == 204) {
-      final jsonResponse = jsonDecode(response.body);
-      return Customer.fromJson(jsonResponse);
+      return true;
     } else {
-      return null;
+      return false;
     }
   }
 
-  deleteAccount(String username, String password) {}
+  Future<bool> deleteAccount(String username) async {
+    var id = Get.find<SessionService>().getSession()?.customerId;
+    final response = await http.post(
+      Uri.parse(
+          '$_baseUrl/api/CustomEndpointEliminarCuenta?cliente=$id&Email=$username'),
+      headers: {'Authorization': 'Bearer ${await getToken()}'},
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

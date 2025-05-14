@@ -58,6 +58,7 @@ class HomePage extends GetView<HomeController> {
             if (index == 0) {
               await travelController.onSearch();
             } else if (index == 1) {
+              reservationController.selectedDate = DateTime.now().obs;
               await reservationController.fetch();
             } else if (index == 2) {
               await settingsController.loadData();

@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/edit_profile_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
+import 'package:ticket_app/data/model/city.dart';
+import 'package:ticket_app/data/model/state.dart';
+import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
+import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
 import 'package:ticket_app/ui/widgets/custom_text_field.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/notification_type.dart';
@@ -91,6 +95,86 @@ class EditProfilePage extends GetView<EditProfileController> {
                                   controller.customerRx?.value?.phoneNumber,
                               labelText: 'Phone',
                               onChanged: controller.onChangePhone),
+                          FutureBuilder(
+                              future: controller.apiService.getStates(),
+                              builder: (context, data) {
+                                return CustomDropdown<StateModel, String>(
+                                  items: data.data?.toList() ?? [],
+                                  onChanged: controller.onChangeState,
+                                  labelText: 'State',
+                                  selectedItem: data.data
+                                      ?.where((x) =>
+                                          x.idState ==
+                                          controller.customerRx?.value?.state)
+                                      .firstOrNull
+                                      ?.idState,
+                                  showSearchBox: true,
+                                  textEditingController:
+                                      TextEditingController(),
+                                  valueProperty: "Id_State",
+                                  labelProperty: "Name",
+                                  labelBuilder: (item) {
+                                    return '${item!["Name"]}';
+                                  },
+                                );
+                              }),
+                          FutureBuilder(
+                              future: controller
+                                          .customerRx?.value?.state?.isEmpty ??
+                                      false
+                                  ? Future.value(List<City>.empty())
+                                  : controller.apiService.getCity(
+                                      controller.customerRx?.value?.state ??
+                                          ''),
+                              builder: (context, data) {
+                                return CustomDropdown<City, int>(
+                                  items: data.data?.toList() ?? [],
+                                  onChanged: controller.onChangeCity,
+                                  selectedItem: data.data
+                                      ?.where((x) =>
+                                          x.idCity ==
+                                          controller.customerRx?.value?.city)
+                                      .firstOrNull
+                                      ?.idCity,
+                                  labelText: 'City',
+                                  showSearchBox: true,
+                                  textEditingController:
+                                      TextEditingController(),
+                                  valueProperty: "Id_City",
+                                  labelProperty: "Name",
+                                  labelBuilder: (item) {
+                                    return '${item!["Name"]}';
+                                  },
+                                );
+                              }),
+                          FutureBuilder(
+                              future: (controller.customerRx?.value?.city ??
+                                          0) >
+                                      0
+                                  ? controller.apiService.getTown(
+                                      controller.customerRx?.value?.city ?? 0)
+                                  : Future.value(List<Town>.empty()),
+                              builder: (context, data) {
+                                return CustomDropdown<Town, int>(
+                                  items: data.data?.toList() ?? [],
+                                  onChanged: controller.onChangeTown,
+                                  selectedItem: data.data
+                                      ?.where((x) =>
+                                          x.idTown ==
+                                          controller.customerRx?.value?.town)
+                                      .firstOrNull
+                                      ?.idTown,
+                                  labelText: 'Town',
+                                  showSearchBox: true,
+                                  textEditingController:
+                                      TextEditingController(),
+                                  valueProperty: "Id_Town",
+                                  labelProperty: "Name",
+                                  labelBuilder: (item) {
+                                    return '${item!["Name"]}';
+                                  },
+                                );
+                              }),
                           CustomTextField(
                               initialValue:
                                   controller.customerRx?.value?.addressLine1,
@@ -101,6 +185,12 @@ class EditProfilePage extends GetView<EditProfileController> {
                                   controller.customerRx?.value?.addressLine2,
                               labelText: 'Address Line 2',
                               onChanged: controller.onChangeAddressLine2),
+                          CustomTextField(
+                            labelText: 'Zip Code',
+                            onChanged: controller.onChangeZipCode,
+                            maxLength: 5,
+                            initialValue: controller.customerRx?.value?.zipCode,
+                          ),
                           Row(
                             children: [
                               Expanded(

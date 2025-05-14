@@ -21,7 +21,7 @@ class CustomDatePicker extends StatefulWidget {
 }
 
 _getStringFromDate(DateTime date) {
-  return DateFormat('dd/MM/yyyy').format(date);
+  return DateFormat('MM/dd/yyyy').format(date);
 }
 
 class _CustomDatePickerState extends State<CustomDatePicker> {

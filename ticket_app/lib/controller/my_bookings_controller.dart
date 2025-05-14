@@ -9,7 +9,7 @@ import 'package:ticket_app/ui/reservations/payment_sheet_modal.dart';
 class MyBookingsController extends GetxController
     with StateMixin<List<Reservation>> {
   final ApiService apiService = Get.find<ApiService>();
-  Rx<DateTime>? selectedDate;
+  Rx<DateTime>? selectedDate = DateTime.now().obs;
   var serviceType = 0.obs;
   @override
   void onInit() {
@@ -28,11 +28,6 @@ class MyBookingsController extends GetxController
     try {
       var data = await apiService
           .getReservations(selectedDate?.value ?? DateTime.now());
-      if (selectedDate != null && data.isNotEmpty) {
-        selectedDate = data.firstOrNull!.departureDate!.obs;
-      } else {
-        selectedDate = DateTime.now().obs;
-      }
 
       change(data, status: RxStatus.success());
     } catch (e) {

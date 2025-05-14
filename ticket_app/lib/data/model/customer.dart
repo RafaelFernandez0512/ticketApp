@@ -1,3 +1,7 @@
+import 'package:ticket_app/data/model/city.dart';
+import 'package:ticket_app/data/model/state.dart';
+import 'package:ticket_app/data/model/town.dart';
+
 class CreateUserRequest {
   final String? firstName;
   final String? middleName;
@@ -18,11 +22,11 @@ class CreateUserRequest {
   final String? emergencyContact;
   final String? contactPhoneNumber;
   final bool? creadoDesdeMovil = true;
-  final String? gender; 
+  final String? gender;
   final String? state;
-  final String? city; 
-  final int? town; 
-  final int? country; 
+  final String? city;
+  final int? town;
+  final int? country;
   final int? customerType = 1002;
 
   CreateUserRequest({
@@ -122,10 +126,16 @@ class Customer {
   String? addressLine2;
   String? zipCode;
   String? photo;
-  bool? status;
+  bool? status = true;
   String? emergencyContact;
   String? contactPhoneNumber;
   bool? creadoDesdeMovil;
+  String? gender;
+  String? state;
+  int? city;
+  int? town;
+  int? country;
+  int? customerType = 1002;
 
   Customer({
     required this.idCustomer,
@@ -148,13 +158,20 @@ class Customer {
     this.emergencyContact,
     this.contactPhoneNumber,
     required this.creadoDesdeMovil,
+    this.gender,
+    this.state,
+    this.city,
+    this.town,
+    this.country,
   });
 
   // Método para convertir un JSON a un objeto Customer
   factory Customer.fromJson(Map<String, dynamic> json) {
     return Customer(
       idCustomer: json['Id_Customer'] as int,
-      birthday: DateTime.parse(json['Birthday'] as String),
+      birthday: json['Birthday'] == null
+          ? null
+          : DateTime.parse(json['Birthday'] as String),
       creationDate: DateTime.parse(json['CreationDate'] as String),
       fullName: json['FullName'] as String,
       firstName: json['FirstName'] as String,
@@ -173,6 +190,13 @@ class Customer {
       emergencyContact: json['EmergencyContact'] as String?,
       contactPhoneNumber: json['ContactPhoneNumber'] as String?,
       creadoDesdeMovil: json['CreadoDesdeMovil'] as bool,
+      town: json['Town'] == null ? null : Town.fromJson(json['Town']).idTown,
+      city: json['City'] == null ? null : City.fromJson(json['City']).idCity,
+      state: json['State'] == null
+          ? null
+          : StateModel.fromJson(json['State']).idState,
+      gender: json['Gender'] == null ? null : json['Gender']['Id_Gender'],
+      country: json['Country'] == null ? null : json['Country']['Id_Country'],
     );
   }
 
@@ -199,6 +223,12 @@ class Customer {
       'EmergencyContact': emergencyContact,
       'ContactPhoneNumber': contactPhoneNumber,
       'CreadoDesdeMovil': creadoDesdeMovil,
+      'Gender': gender, // Nuevo campo
+      'State': state, // Nuevo campo
+      'City': city, // Nuevo campo
+      'Town': town, // Nuevo campo
+      'Country': country, // Nuevo campo
+      'CustomerType': customerType, // Nuevo campo
     };
   }
 }

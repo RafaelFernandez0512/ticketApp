@@ -33,7 +33,24 @@ class AuthService extends GetxService {
       return '';
     }
   }
+  Future<String> verify(String username, String password) async {
+    final url = Uri.parse('$baseUrl/api/Authentication/Authenticate');
+    final response = await http
+        .post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'Username': username, 'Password': password}),
+        )
+        .timeout(
+            const Duration(seconds: 120)); // Aplicar timeout de 10 segundo;
 
+    if (response.statusCode == 200) {
+
+      return response.body; // Token de autenticación
+    } else {
+      return '';
+    }
+  }
   Future<String> temporalToken() async {
     try {
       final url = Uri.parse('$baseUrl/api/Authentication/Authenticate');
