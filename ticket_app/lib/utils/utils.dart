@@ -45,6 +45,11 @@ String formatDate(String date) {
   return DateFormat('MM-dd-yyyy').format(parsedDate); // Formato YYYY-MM-DD
 }
 
+String formatDateName(String date) {
+  DateTime parsedDate = DateTime.parse(date);
+  return DateFormat('dd MMM yyyy').format(parsedDate); // Formato YYYY-MM-DD
+}
+
 String formatTime(String date) {
   DateTime parsedDate = DateTime.parse(date);
   return DateFormat('hh:mm a').format(parsedDate); // Formato 12h con AM/PM

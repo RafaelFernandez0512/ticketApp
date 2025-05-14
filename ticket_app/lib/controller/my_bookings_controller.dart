@@ -30,6 +30,8 @@ class MyBookingsController extends GetxController
           .getReservations(selectedDate?.value ?? DateTime.now());
       if (selectedDate != null && data.isNotEmpty) {
         selectedDate = data.firstOrNull!.departureDate!.obs;
+      } else {
+        selectedDate = DateTime.now().obs;
       }
 
       change(data, status: RxStatus.success());
@@ -54,7 +56,7 @@ class MyBookingsController extends GetxController
   onPayment(BuildContext context, Reservation reservation) async {
     if (DateTime.now().isAfter(reservation.departureDate!)) {
       Get.showSnackbar(
-       const GetSnackBar(
+        const GetSnackBar(
           title: "Payment Not Allowed",
           message: "Payments are only allowed before the departure date.",
           duration: const Duration(seconds: 3),
