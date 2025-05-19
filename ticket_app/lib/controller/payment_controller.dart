@@ -8,6 +8,7 @@ import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/model/session.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
+import 'package:ticket_app/utils/notification_type.dart';
 
 class PaymentController extends GetxController {
   ApiService _apiService = Get.find<ApiService>();
@@ -36,10 +37,10 @@ class PaymentController extends GetxController {
     if (response != null) {
       Get.snackbar(
         'Success',
-        'Payment processed successfully!',
+        'Payment processed successfully. Your ticket was sent to your email',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Get.theme.snackBarTheme.backgroundColor,
-        colorText: Get.theme.snackBarTheme.actionTextColor,
+        backgroundColor: notificationTypeColors[NotificationType.success],
+        colorText: Colors.white
       );
       EasyLoading.dismiss();
       return true;

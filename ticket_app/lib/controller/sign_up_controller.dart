@@ -192,7 +192,7 @@ class SignUpController extends GetxController with StateMixin {
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
         content: Text(validationResult.errors
-            .map((x) => '${x.key} ${x.message}')
+            .map((x) => x.message)
             .join('\n')),
         actions: [
           TextButton(

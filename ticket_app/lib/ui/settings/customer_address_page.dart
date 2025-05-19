@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/customer_address_controller.dart';
-import 'package:ticket_app/ui/setting/create_customer_address_modal_sheet.dart';
+import 'package:ticket_app/ui/settings/create_customer_address_modal_sheet.dart';
 import 'package:ticket_app/utils/gaps.dart';
 
 class CustomerAddressPage extends GetView<CustomerAddressController> {

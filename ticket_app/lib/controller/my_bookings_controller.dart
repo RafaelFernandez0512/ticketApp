@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
-import 'package:ticket_app/ui/reservations/payment_sheet_modal.dart';
+import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
 
 class MyBookingsController extends GetxController
     with StateMixin<List<Reservation>> {
@@ -15,7 +15,6 @@ class MyBookingsController extends GetxController
   void onInit() {
     super.onInit();
     serviceType = 0.obs;
-    selectedDate = null;
   }
 
   onChangeType(int? type) async {

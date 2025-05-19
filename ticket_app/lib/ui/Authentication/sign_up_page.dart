@@ -5,7 +5,7 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/controller/sign_up_controller.dart';
-import 'package:ticket_app/ui/Authentication/verification_code.dart';
+import 'package:ticket_app/ui/Authentication/components/verification_code.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/ui/Authentication/components/sign_up_form.dart';
 import 'package:ticket_app/utils/gaps.dart';

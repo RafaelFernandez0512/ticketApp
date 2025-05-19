@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 
-class ReservationDetailController extends GetxController
+class BookingPdfPageController extends GetxController
     with StateMixin<String?> {
   final ApiService apiService = Get.find<ApiService>();
   Rx<DateTime>? selectedDate;

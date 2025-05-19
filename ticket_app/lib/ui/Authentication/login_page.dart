@@ -6,8 +6,8 @@ import 'package:ticket_app/controller/login_controller.dart';
 import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/ui/Authentication/components/login_form.dart';
-import 'package:ticket_app/ui/components/background.dart';
-import 'package:ticket_app/ui/components/response.dart';
+import 'package:ticket_app/ui/widgets/background.dart';
+import 'package:ticket_app/ui/widgets/response.dart';
 import 'package:ticket_app/utils/constants.dart';
 import 'package:ticket_app/utils/gaps.dart';
 

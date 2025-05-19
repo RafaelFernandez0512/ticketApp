@@ -12,7 +12,7 @@ import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
 import 'package:ticket_app/ui/widgets/custom_text_field.dart';
-import 'package:ticket_app/utils/Validators/user_register_validator%20copy.dart';
+import 'package:ticket_app/utils/Validators/user_edit_validator.dart';
 import 'package:ticket_app/utils/gaps.dart';
 
 class EditProfileController extends GetxController with StateMixin<Customer?> {
@@ -44,6 +44,7 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
       customerRx?.update((val) {
         val!.photo = base64String;
       });
+      update();
     }
   }
 
@@ -79,7 +80,7 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
         content: Text(validationResult.errors
-            .map((x) => '${x.key} ${x.message}')
+            .map((x) => x.message)
             .join('\n')),
         actions: [
           TextButton(

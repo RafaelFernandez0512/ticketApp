@@ -12,4 +12,5 @@ abstract class Routes {
   static const CUSTOMER_ADDRESS = '/customerAddress';
   static const EDIT_PROFILE = '/edit-profile';
   static const RESERVATION_DETAIL = '/reservation-detail';
+  static const QR_PAGE = '/qr-page';
 }

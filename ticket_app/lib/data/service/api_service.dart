@@ -715,4 +715,22 @@ class ApiService extends GetxService {
       return false;
     }
   }
+
+  Future verifyStatusReservation(int number) async {
+       final response = await http.post(
+        Uri.parse(
+            '$_baseUrl/api/CustomEndpointValidateTicketBeforeBoarding?Reservation=$number'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await getToken()}',
+        },
+        body: null);
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return jsonResponse[0]['Mensaje'] as String?;
+    } else {
+      return null;
+    }
+  }
 }

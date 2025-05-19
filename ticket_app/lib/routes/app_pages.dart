@@ -13,10 +13,11 @@ import 'package:ticket_app/ui/Authentication/forgot_password.dart';
 import 'package:ticket_app/ui/Authentication/sign_up_page.dart';
 import 'package:ticket_app/ui/Authentication/login_page.dart';
 import 'package:ticket_app/ui/home_page.dart';
-import 'package:ticket_app/ui/reservations/create_reservation/create_booking_page.dart';
-import 'package:ticket_app/ui/reservations/my_reservation/reservation_detail_page.dart';
-import 'package:ticket_app/ui/setting/customer_address_page.dart';
-import 'package:ticket_app/ui/setting/edit_profile_page.dart';
+import 'package:ticket_app/ui/bookings/create_booking/create_booking_page.dart';
+import 'package:ticket_app/ui/bookings/my_bookings/booking_pdf_page.dart';
+import 'package:ticket_app/ui/scanner/qr_page.dart';
+import 'package:ticket_app/ui/settings/customer_address_page.dart';
+import 'package:ticket_app/ui/settings/edit_profile_page.dart';
 import 'package:ticket_app/ui/splash_page.dart';
 
 part './app_routes.dart';
@@ -54,7 +55,8 @@ abstract class AppPages {
         binding: EditProfileBinding()),
     GetPage(
         name: Routes.RESERVATION_DETAIL,
-        page: () => const ReservationDetailPage(),
-        binding: ReservationDetailBinding()),
+        page: () => const BookingPdfPage(),
+        binding: BookingPdfPageBinding()),
+    GetPage(name: Routes.QR_PAGE, page: ()=>  QRPage())
   ];
 }

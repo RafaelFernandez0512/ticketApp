@@ -13,8 +13,9 @@ import 'package:ticket_app/data/model/service_type.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/service/api_service.dart';
+import 'package:ticket_app/data/service/session_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
-import 'package:ticket_app/ui/reservations/payment_sheet_modal.dart';
+import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
 import 'package:ticket_app/utils/Validators/create_reservation_validator.dart';
 
 class CreateBookingController extends GetxController with StateMixin {
@@ -73,6 +74,8 @@ class CreateBookingController extends GetxController with StateMixin {
           final citiesFromFuture = getCities(fromId);
           final citiesToFuture = getCities(toId);
 
+  
+
           // Wait for all in parallel
           final results = await Future.wait<dynamic>([
             addressFromFuture,
@@ -85,6 +88,7 @@ class CreateBookingController extends GetxController with StateMixin {
           customerAddressTo = results[1];
           citiesFrom = results[2];
           citiesTo = results[3];
+         
         }
       }
 
@@ -93,7 +97,20 @@ class CreateBookingController extends GetxController with StateMixin {
         statesFuture,
         fetchCitiesAndAddresses(),
       ]);
-
+                var username = Get.find<SessionService>().getSession()?.username;
+          var customer = await apiService.getCustomer(username??'');
+          if(customer!=null && customer.state==createReservation.value.travel?.stateFrom?.idState){
+                      addressLine1From = customer.addressLine1??'';
+                      addressLine2From= customer.addressLine2??'';
+                      fromZipCode = customer.zipCode??'';
+                      var city = citiesFrom.where((x)=>x.idCity==customer.city).firstOrNull;
+                      if(city!=null){
+                        await  onChangeFromCity(city);
+                        createReservation.value.fromTown = townsFrom.where((x)=>x.idTown == customer.town).firstOrNull;
+                      }
+                      
+                    
+          }
       await getSchedule(); // This one depends on the others, so it's awaited after
     } catch (e) {
       // Optionally handle the error
@@ -435,7 +452,7 @@ class CreateBookingController extends GetxController with StateMixin {
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
         content: Text(validationResult.errors
-            .map((x) => '${x.key} ${x.message}')
+            .map((x) => x.message)
             .join('\n')),
         actions: [
           TextButton(
@@ -453,9 +470,9 @@ class CreateBookingController extends GetxController with StateMixin {
   var disableAddress = false.obs;
   var disableAddressTo = false.obs;
 
-  void onFromCustomerAddress(CustomerAddress? x) {
+  Future onFromCustomerAddress(CustomerAddress? x) async {
     townsFrom.clear();
-    townsFrom.add(x!.town!);
+    townsFrom = await getTowns(x!.city!.idCity);
     createReservation.value.fromCity =
         citiesFrom.where((x) => x.idCity == x.idCity).firstOrNull;
     createReservation.value.fromTown = x.town;
@@ -468,9 +485,9 @@ class CreateBookingController extends GetxController with StateMixin {
     update();
   }
 
-  void onToCustomerAddress(CustomerAddress? x) {
+  Future onToCustomerAddress(CustomerAddress? x) async {
     townsTo.clear();
-    townsTo.add(x!.town!);
+     townsTo = await getTowns(x!.city!.idCity);
     createReservation.value.toCity =
         citiesTo.where((x) => x.idCity == x.idCity).firstOrNull;
     createReservation.value.toTown = x.town;

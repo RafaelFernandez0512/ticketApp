@@ -7,9 +7,9 @@ import 'package:ticket_app/controller/my_bookings_controller.dart';
 import 'package:ticket_app/controller/reservations_controller.dart';
 import 'package:ticket_app/controller/settings_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
-import 'package:ticket_app/ui/reservations/my_bookings_page.dart';
-import 'package:ticket_app/ui/reservations/travels_page.dart';
-import 'package:ticket_app/ui/setting/settings_page.dart';
+import 'package:ticket_app/ui/bookings/my_bookings/my_bookings_page.dart';
+import 'package:ticket_app/ui/bookings/travels/travels_page.dart';
+import 'package:ticket_app/ui/settings/settings_page.dart';
 
 class HomePage extends GetView<HomeController> {
   HomePage({super.key});

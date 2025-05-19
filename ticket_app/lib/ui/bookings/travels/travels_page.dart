@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:ticket_app/controller/reservations_controller.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/travel.dart';
-import 'package:ticket_app/ui/reservations/ticket_view.dart';
+import 'package:ticket_app/ui/bookings/travels/components/ticket_view.dart';
 import 'package:ticket_app/ui/widgets/custom_bottom_segmented_control.dart';
 import 'package:ticket_app/ui/widgets/custom_bottom_segmented_item.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
@@ -29,7 +29,7 @@ class TravelsPage extends GetView<TravelsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reservations',
+        title: Text('Travels',
             style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
       ),

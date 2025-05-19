@@ -39,7 +39,10 @@ class TravelsController extends GetxController with StateMixin {
   }
 
   void onChangedDate(DateTime? date) {
-    selectedDate = date!.obs;
+    if(date!=null){
+ selectedDate = date!.obs;
+    }
+   
     update();
   }
 

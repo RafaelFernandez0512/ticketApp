@@ -5,8 +5,8 @@ import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/controller/create_booking_controller.dart';
 import 'package:ticket_app/data/model/travel.dart';
-import 'package:ticket_app/ui/reservations/create_reservation/confirmation_ticket_view.dart';
-import 'package:ticket_app/ui/reservations/create_reservation/reservation_form.dart';
+import 'package:ticket_app/ui/bookings/create_booking/components/confirmation_ticket_view.dart';
+import 'package:ticket_app/ui/bookings/create_booking/components/reservation_form_view.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/notification_type.dart';
@@ -43,7 +43,7 @@ class CreateBookingPage extends GetView<CreateBookingController> {
                           EasyStep(
                             customStep:
                                 Icon(Icons.departure_board, color: Colors.red),
-                            title: 'Reservation',
+                            title: 'Booking',
                           ),
                           EasyStep(
                             customStep: Icon(Icons.check, color: Colors.red),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/reservation.dart';
-import 'package:ticket_app/ui/reservations/payment_sheet_modal.dart';
+import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
 import 'package:ticket_app/ui/widgets/LayoutBuilderWidget.dart';
 import 'package:ticket_app/ui/widgets/circle_shape.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
@@ -13,8 +13,9 @@ import 'package:ticket_app/utils/utils.dart';
 class MyTicketReservationView extends StatelessWidget {
   final Reservation ticket;
   final void Function()? onTapPayment;
+    final void Function()? onTapReceive;
   const MyTicketReservationView(
-      {super.key, required this.ticket, required this.onTapPayment});
+      {super.key, required this.ticket, required this.onTapPayment, required this.onTapReceive});
 
   @override
   Widget build(
@@ -385,9 +386,16 @@ class MyTicketReservationView extends StatelessWidget {
           ],
         );
       case 'PA':
-        return Text('PAID',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700, color: Color(0xFF60C664)));
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text('PAID',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700, color: Color(0xFF60C664))),
+                    gapH12,
+                    CustomButton(label: 'Tap to view',icon: Icon(Icons.receipt_long,color: Colors.white,),onPressed: onTapReceive,)
+          ],
+        );
       default:
         return Text(reservation.status?.description ?? '',
             style: Theme.of(context)

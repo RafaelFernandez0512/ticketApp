@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/my_bookings_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
-import 'package:ticket_app/ui/reservations/my_reservation/my_ticket_reservation_view.dart';
+import 'package:ticket_app/ui/bookings/my_bookings/components/my_ticket_reservation_view.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/utils.dart';
 
@@ -23,7 +23,7 @@ class MyBookingsPage extends GetView<MyBookingsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Reservations',
+        title: Text('My Bookings',
             style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
       ),
@@ -41,10 +41,13 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                         firstDate:
                             DateTime.now().subtract(const Duration(days: 50)),
                         focusDate: controller.selectedDate?.value,
+                        
                         lastDate: DateTime.now().add(const Duration(days: 300)),
+                        
                         onDateChange: (selectedDate) {
                           controller.onChangeDate(selectedDate);
                         },
+                     
                         headerBuilder: (context, date) {
                           return Column(
                             children: [
@@ -128,10 +131,11 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () {
-                                  controller.onTap(index);
+                                 // controller.onTap(index);
                                 },
                                 child: MyTicketReservationView(
                                   ticket: state[index],
+                                  onTapReceive:()=>     controller.onTap(index),
                                   onTapPayment: () async {
                                     await controller.onPayment(
                                         context, state[index]);
