@@ -255,6 +255,7 @@ class SignUpController extends GetxController with StateMixin {
   backStep() {
     if (activeStep.value == 0) {
       Get.back();
+      return;
     }
 
     activeStep.value--;

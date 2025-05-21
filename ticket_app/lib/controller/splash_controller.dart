@@ -24,19 +24,21 @@ class SplashController extends GetxController with StateMixin {
     Future.delayed(const Duration(seconds: 2), () async {
       try {
         var user = Get.find<SessionService>().getSession();
-        await loadData();
+      
         if (((user?.customerId ?? 0)) > 0 && user != null) {
           var auth = await Get.find<AuthService>()
               .authenticate(user.username ?? "", user.password ?? "");
-
+             
           if (auth.isNotEmpty) {
             await Get.find<ApiService>().getCustomer(user.username!);
-
+   await loadData(); 
             Get.offAllNamed(Routes.HOME);
             return;
           } else {
             if (user.username?.isNotEmpty ?? false) {
               await Get.find<SharedPreferences>().clear();
+                 await loadData(); 
+              
             }
           }
         }

@@ -1,4 +1,5 @@
 import 'package:easy_stepper/easy_stepper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
@@ -65,7 +66,8 @@ class ForgotPasswordPage extends GetView<ForgotPasswordController> {
                                   title: 'Change Password',
                                 ),
                               ]),
-                          _buildStepContent(controller.activeStep.value),
+                             SizedBox(width: kIsWeb? MediaQuery.of(context).size.width*0.3:MediaQuery.of(context).size.width, child:  _buildStepContent(controller.activeStep.value)),
+                          
                           gapH30,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
