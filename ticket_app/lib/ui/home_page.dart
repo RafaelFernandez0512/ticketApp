@@ -13,9 +13,9 @@ import 'package:ticket_app/ui/settings/settings_page.dart';
 
 class HomePage extends GetView<HomeController> {
   HomePage({super.key});
-  var travelController = Get.find<TravelsController>();
-  var reservationController = Get.find<MyBookingsController>();
-  var settingsController = Get.find<SettingsController>();
+  final travelController = Get.find<TravelsController>();
+  final reservationController = Get.find<MyBookingsController>();
+  final settingsController = Get.find<SettingsController>();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,6 @@ class HomePage extends GetView<HomeController> {
             if (index == 0) {
               await travelController.onSearch();
             } else if (index == 1) {
-              reservationController.selectedDate = DateTime.now().obs;
               await reservationController.fetch();
             } else if (index == 2) {
               await settingsController.loadData();

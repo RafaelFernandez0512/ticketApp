@@ -10,6 +10,7 @@ class Payment {
   final String? description;
   final DateTime? paymentDate;
   final String? reference;
+  final String? serviceType;
 
   Payment({
     this.reservationNumber,
@@ -23,6 +24,7 @@ class Payment {
     this.description,
     this.paymentDate,
     this.reference,
+    this.serviceType
   });
 
   // Método para convertir un JSON a un objeto Payment

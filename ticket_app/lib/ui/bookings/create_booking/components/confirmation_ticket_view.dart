@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/create_reservation.dart';
 import 'package:ticket_app/ui/widgets/LayoutBuilderWidget.dart';
+import 'package:ticket_app/ui/widgets/base_64_image_with_fallback.dart';
 import 'package:ticket_app/ui/widgets/circle_shape.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/utils.dart';
@@ -21,6 +24,8 @@ class ConfirmationTicketView extends StatelessWidget {
       color: Colors.white,
       child: Column(
         children: [
+          Base64ImageWithFallback(
+              base64String: ticket.photo!, height: 45.sp, width: 70.sp),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
             child: Row(
@@ -192,7 +197,7 @@ class ConfirmationTicketView extends StatelessWidget {
                               style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
-                     const Spacer(),
+                      const Spacer(),
                       Column(
                         children: [
                           Text(formatTime(ticket.date!.toIso8601String()),
@@ -207,45 +212,71 @@ class ConfirmationTicketView extends StatelessWidget {
                     ],
                   ),
                 ),
-               const Divider(),
+                const Divider(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     spacing: 8,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.person,
-                            color: Colors.black26,
-                          ),
-                          gapW8,
-                          Text('Passengers:',
-                              style: Theme.of(context).textTheme.titleMedium),
-                          gapW12,
-                          Text(ticket.passengerCount.toString(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w700)),
-                        ],
+                      Visibility(
+                        visible: ticket.serviceType == 0,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.person,
+                              color: Colors.black26,
+                            ),
+                            gapW8,
+                            Text('Passengers:',
+                                style: Theme.of(context).textTheme.titleMedium),
+                            gapW12,
+                            Text(ticket.passengerCount.toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w700)),
+                          ],
+                        ),
                       ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.work,
-                            color: Colors.brown,
-                          ),
-                          gapW8,
-                          Text('Bags:',
-                              style: Theme.of(context).textTheme.titleMedium),
-                          gapW8,
-                          Text(ticket.bagsCount.toString(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w700)),
-                        ],
+                      Visibility(
+                        visible: ticket.serviceType == 0,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.work,
+                              color: Colors.brown,
+                            ),
+                            gapW8,
+                            Text('Bags:',
+                                style: Theme.of(context).textTheme.titleMedium),
+                            gapW8,
+                            Text(ticket.bagsCount.toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w700)),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible: ticket.serviceType == 1,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.check_box,
+                              color: Colors.grey,
+                            ),
+                            gapW8,
+                            Text('Items:',
+                                style: Theme.of(context).textTheme.titleMedium),
+                            gapW8,
+                            Text(ticket.items.toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w700)),
+                          ],
+                        ),
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,6 +311,22 @@ class ConfirmationTicketView extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleMedium),
                           ),
                         ],
+                      ),
+                      Visibility(
+                        visible: ticket.serviceType == 1,
+                        child: Row(
+                          children: [
+                            gapW8,
+                            Text('Description:',
+                                style: Theme.of(context).textTheme.titleMedium),
+                            gapW8,
+                            Text(ticket.description.toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w700)),
+                          ],
+                        ),
                       ),
                     ],
                   ),

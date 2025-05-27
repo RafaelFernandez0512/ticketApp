@@ -21,9 +21,13 @@ class PaymentController extends GetxController {
 
     var payment = Payment(
             customer: customerId,
-            reservationNumber: reservation.reservationNumber,
+            reservationNumber: reservation.serviceType == 0
+                ? reservation.reservationNumber
+                : 0,
             membership: 0,
-            service: 1,
+            service: reservation.serviceType == 1
+                ? reservation.reservationNumber
+                : 0,
             paymentMethod: "CC",
             subtotal: reservation.amount ?? 0,
             discount: 0,
@@ -35,13 +39,18 @@ class PaymentController extends GetxController {
     var response = await _apiService.payment(payment.value);
 
     if (response != null) {
-      Get.snackbar(
-        'Success',
-        'Payment processed successfully. Your ticket was sent to your email',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: notificationTypeColors[NotificationType.success],
-        colorText: Colors.white
-      );
+      if (reservation.serviceType == 0) {
+        await _apiService.changeStatusReservation(
+            reservation.reservationNumber, 'PA', 'Reservation');
+      } else {
+        await _apiService.changeStatusReservation(
+            reservation.reservationNumber, 'P', 'Service');
+      }
+      Get.snackbar('Success',
+          'Payment processed successfully. Your ticket was sent to your email',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: notificationTypeColors[NotificationType.success],
+          colorText: Colors.white);
       EasyLoading.dismiss();
       return true;
     } else {

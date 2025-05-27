@@ -1,3 +1,4 @@
+import 'package:ticket_app/data/model/Item_type.dart';
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/customer.dart';
 import 'package:ticket_app/data/model/payment.dart';
@@ -33,36 +34,43 @@ class Reservation {
   final Travel? travel;
   final ReservationStatus? status;
   final Customer? customer;
+  final ItemType? items;
+  final int? quantity;
+  final String? photo;
+  int? serviceType = 0;
   List<PaymentResponse> payment;
 
-  Reservation({
-    required this.reservationNumber,
-    required this.departureDate,
-    required this.departureDateFilter,
-    required this.createDate,
-    required this.oneWay,
-    required this.roundTrip,
-    required this.passengerNumber,
-    required this.addressLine1From,
-    this.addressLine2From,
-    required this.zipCodeFrom,
-    required this.addressLine1To,
-    this.addressLine2To,
-    required this.zipCodeTo,
-    required this.description,
-    required this.bag,
-    required this.amount,
-    required this.stateFrom,
-    required this.stateTo,
-    required this.cityFrom,
-    required this.cityTo,
-    required this.townFrom,
-    required this.townTo,
-    required this.travel,
-    required this.status,
-    required this.customer,
-    required this.payment,
-  });
+  Reservation(
+      {required this.reservationNumber,
+      required this.departureDate,
+      required this.departureDateFilter,
+      required this.createDate,
+      required this.oneWay,
+      required this.roundTrip,
+      required this.passengerNumber,
+      required this.addressLine1From,
+      this.addressLine2From,
+      required this.zipCodeFrom,
+      required this.addressLine1To,
+      this.addressLine2To,
+      required this.zipCodeTo,
+      required this.description,
+      required this.bag,
+      required this.amount,
+      required this.stateFrom,
+      required this.stateTo,
+      required this.cityFrom,
+      required this.cityTo,
+      required this.townFrom,
+      required this.townTo,
+      required this.travel,
+      required this.status,
+      required this.customer,
+      required this.payment,
+      this.items,
+      this.photo,
+      this.serviceType,
+      this.quantity});
 
 // Factory method to create a Reservation object from JSON
   factory Reservation.fromJson(Map<String, dynamic> json) {
@@ -113,7 +121,58 @@ class Reservation {
           [],
     );
   }
-
+  factory Reservation.fromServiceJson(Map<String, dynamic> json) {
+    return Reservation(
+      reservationNumber: json['ServiceNumber'] as int,
+      departureDate: json['DepartureDate'] != null
+          ? DateTime.parse(json['DepartureDate'] as String).toLocal()
+          : null,
+      departureDateFilter: json['DepartureDateFilter'] != null
+          ? DateTime.parse(json['DepartureDateFilter'] as String)
+          : null,
+      createDate: json['CreateDate'] != null
+          ? DateTime.parse(json['CreateDate'] as String)
+          : null,
+      oneWay: json['OneWay'] as bool?,
+      roundTrip: json['RoundTrip'] as bool?,
+      passengerNumber: null,
+      addressLine1From: json['AddressLine1From'] as String? ?? '',
+      addressLine2From: json['AddressLine2From'] as String?,
+      zipCodeFrom: json['ZipCodeFrom'] as String?,
+      addressLine1To: json['AddressLine1To'] as String? ?? '',
+      addressLine2To: json['AddressLine2To'] as String?,
+      zipCodeTo: json['ZipCodeTo'] as String?,
+      description: json['Description'] as String?,
+      bag: null,
+      items: json['Item'] != null ? ItemType.fromJson(json["Item"]) : null,
+      photo: json['Image'] as String?,
+      amount:
+          json['Amount'] != null ? (json['Amount'] as num).toDouble() : null,
+      stateFrom: json['StateFrom'] != null
+          ? StateModel.fromJson(json['StateFrom'])
+          : null,
+      stateTo:
+          json['StateTo'] != null ? StateModel.fromJson(json['StateTo']) : null,
+      cityFrom:
+          json['CityFrom'] != null ? City.fromJson(json['CityFrom']) : null,
+      cityTo: json['CityTo'] != null ? City.fromJson(json['CityTo']) : null,
+      townFrom:
+          json['TownFrom'] != null ? Town.fromJson(json['TownFrom']) : null,
+      townTo: json['TownTo'] != null ? Town.fromJson(json['TownTo']) : null,
+      travel: json['Travel'] != null ? Travel.fromJson(json['Travel']) : null,
+      status: json['ServiceStatus'] != null
+          ? ReservationStatus.fromJsonService(json['ServiceStatus'])
+          : null,
+      customer:
+          json['Customer'] != null ? Customer.fromJson(json['Customer']) : null,
+      payment: (json['Payments'] as List<dynamic>?)
+              ?.map((e) => PaymentResponse.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      quantity: json["Quantity"],
+      serviceType: 1,
+    );
+  }
   // Method to convert a Reservation object to JSON
   Map<String, dynamic> toJson() {
     return {

@@ -8,15 +8,15 @@ class CustomButton extends StatelessWidget {
   final NotificationType? type;
   final void Function()? onPressed;
   final IconAlignment iconAlignment;
-
-  const CustomButton({
-    super.key,
-    required this.label,
-    required this.icon,
-    this.type = NotificationType.normal,
-    this.onPressed,
-    this.iconAlignment = IconAlignment.end,
-  });
+  final bool fullSize;
+  const CustomButton(
+      {super.key,
+      required this.label,
+      required this.icon,
+      this.type = NotificationType.normal,
+      this.onPressed,
+      this.iconAlignment = IconAlignment.end,
+      this.fullSize = false});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class CustomButton extends StatelessWidget {
                 ),
           );
 
-    return ElevatedButton.icon(
+    var button = ElevatedButton.icon(
       onPressed: onPressed,
       icon: icon,
       iconAlignment: iconAlignment,
@@ -49,5 +49,6 @@ class CustomButton extends StatelessWidget {
         ),
       ),
     );
+    return fullSize ? Row(children: [Expanded(child: button)]) : button;
   }
 }

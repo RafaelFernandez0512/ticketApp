@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_app/data/model/create_reservation.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/travel.dart';
@@ -20,7 +19,6 @@ class TravelsController extends GetxController with StateMixin {
   void onInit() async {
     super.onInit();
     onSearch();
-    //fetch();
   }
 
   Future<void> getStates() async {
@@ -39,10 +37,10 @@ class TravelsController extends GetxController with StateMixin {
   }
 
   void onChangedDate(DateTime? date) {
-    if(date!=null){
- selectedDate = date!.obs;
+    if (date != null) {
+      selectedDate = date.obs;
     }
-   
+
     update();
   }
 
@@ -81,7 +79,13 @@ class TravelsController extends GetxController with StateMixin {
   tapTravel(Travel travel) async {
     EasyLoading.show(status: 'Loading...');
     var id = Get.find<SessionService>().getSession()?.customerId;
-    var message = await apiService.validReservation(travel.travelNumber, id!);
+    String? message = '';
+    if (serviceType.value == 0) {
+      message = await apiService.validReservation(travel.travelNumber, id!);
+    } else {
+      message = await apiService.validService(travel.travelNumber, id!);
+    }
+
     if (message != null && message.isNotEmpty) {
       EasyLoading.dismiss();
       await Get.dialog(AlertDialog(
@@ -134,7 +138,8 @@ class TravelsController extends GetxController with StateMixin {
     Get.toNamed(Routes.CREATE_BOOKING, arguments: create);
   }
 
-  onChangeType(int? x) {
+  onChangeType(int? x) async {
     serviceType.value = x!;
+    await onSearch();
   }
 }

@@ -67,32 +67,42 @@ class SettingsPage extends GetView<SettingsController> {
                       const SizedBox(height: 32),
 
                       // Opciones de configuración
-                     ListTile(
-                        leading: const Icon(Icons.qr_code),
-                        title: const Text('Scan Ticket'),
-                        subtitle: const Text('Scan a ticket to check its payment status.'),
-                        onTap: () async {
-                          // Navegar a la pantalla de edición de perfil
-                          if(!await checkCameraPermission()){
-                         Get.dialog(
-                            AlertDialog(
-                              title: const Text('Camera Permission Required'),
-                              content: const Text(
-                                  'This feature needs access to your camera to scan QR codes. Please grant camera permission in your device settings.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Get.back(),
-                                  child: const Text('OK'),
-                                ),
-                              ],
+                      Visibility(
+                        visible: controller.showScanner.value ?? false,
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.qr_code),
+                              title: const Text('Scan Ticket'),
+                              subtitle: const Text(
+                                  'Scan a ticket to check its payment status.'),
+                              onTap: () async {
+                                // Navegar a la pantalla de edición de perfil
+                                if (!await checkCameraPermission()) {
+                                  Get.dialog(
+                                    AlertDialog(
+                                      title: const Text(
+                                          'Camera Permission Required'),
+                                      content: const Text(
+                                          'This feature needs access to your camera to scan QR codes. Please grant camera permission in your device settings.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Get.back(),
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  return;
+                                }
+                                await Get.toNamed(Routes.QR_PAGE);
+                              },
                             ),
-                          );
-                            return;
-                          }
-                         await Get.toNamed(Routes.QR_PAGE);
-                        },
+                            const Divider(),
+                          ],
+                        ),
                       ),
-                      const Divider(),
+
                       ListTile(
                         leading: const Icon(Icons.edit),
                         title: const Text('Edit Profile'),

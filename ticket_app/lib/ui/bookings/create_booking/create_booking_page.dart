@@ -39,13 +39,14 @@ class CreateBookingPage extends GetView<CreateBookingController> {
                         showLoadingAnimation: false,
                         stepShape: StepShape.rRectangle,
                         finishedStepTextColor: Colors.grey,
-                        steps: const [
+                        steps: [
                           EasyStep(
-                            customStep:
-                                Icon(Icons.departure_board, color: Colors.red),
-                            title: 'Booking',
+                            customStep: const Icon(Icons.departure_board,
+                                color: Colors.red),
+                            title: 'Booking '
+                                '${(controller.createReservation.value.serviceType == 0 ? "travel" : "services")}',
                           ),
-                          EasyStep(
+                          const EasyStep(
                             customStep: Icon(Icons.check, color: Colors.red),
                             title: 'Confirmation',
                           ),
@@ -62,13 +63,10 @@ class CreateBookingPage extends GetView<CreateBookingController> {
   Widget _buildStepContent(int step, BuildContext context) {
     switch (step) {
       case 0:
-        return Column(
-          children: [
-            controller.obx(
-              (state) => ReservationForm(
-                controller: controller,
-              ),
-              onLoading: const Center(child: CircularProgressIndicator()),
+        return controller.obx(
+          (state) => Column(children: [
+            ReservationForm(
+              controller: controller,
             ),
             gapH30,
             CustomButton(
@@ -81,7 +79,8 @@ class CreateBookingPage extends GetView<CreateBookingController> {
                 onPressed: () {
                   controller.nextStep(context);
                 }),
-          ],
+          ]),
+          onLoading: const Center(child: CircularProgressIndicator()),
         );
       case 1:
         return Column(

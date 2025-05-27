@@ -14,7 +14,12 @@ class ReservationStatus {
       description: json['Description'] as String,
     );
   }
-
+  factory ReservationStatus.fromJsonService(Map<String, dynamic> json) {
+    return ReservationStatus(
+      idReservationStatus: json['Id_ServiceStatus'] as String,
+      description: json['Description'] as String,
+    );
+  }
   // Método para convertir un objeto ReservationStatus a JSON
   Map<String, dynamic> toJson() {
     return {

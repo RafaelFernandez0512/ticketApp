@@ -5,6 +5,7 @@ import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/travel.dart';
 
 class CreateReservation {
+  int? id = 0;
   StateModel? fromSate;
   String? fromAddressLine1;
   String? fromAddressLine2;
@@ -24,13 +25,14 @@ class CreateReservation {
   Schedule? hour;
   int? bagsCount;
   int? passengerCount = 1;
+  int? items;
   int? idCustomerAddress;
   int? idCustomerAddressTo;
   double? price;
 
   String? fromFullAddress;
   Travel? travel;
-
+  String? photo;
   String? toFullAddress;
   CreateReservation(
       {this.fromSate,
@@ -41,12 +43,18 @@ class CreateReservation {
       this.toTown,
       this.date,
       this.serviceType,
-     required  this.customerId,
-      this.travel});
+      required this.customerId,
+      this.travel,
+      this.description,
+      this.quantity, this.id});
+
+  String? description;
+
+  int? quantity = 1;
 
   Map<String, dynamic> toJson() {
     return {
-      'ReservationNumber': 0,
+      'ReservationNumber': id,
       'ReservationStatus': 'IN',
       'OneWay': false,
       'RoundTrip': false,
@@ -69,6 +77,35 @@ class CreateReservation {
       'Bag': bagsCount,
       'Amount': price,
       'CreateDate': DateTime.now().toIso8601String(),
+    };
+  }
+
+  Map<String, dynamic> toJsonService() {
+    return {
+      'ServiceNumber': id,
+      'ServiceStatus': 'I',
+      'OneWay': false,
+      'RoundTrip': false,
+      'Travel': travel?.travelNumber,
+      'Customer': customerId,
+      'Item': items,
+      'AddressLine1From': fromAddressLine1,
+      'AddressLine2From': fromAddressLine2,
+      'StateFrom': fromSate?.idState,
+      'CityFrom': fromCity?.idCity,
+      'TownFrom': fromTown?.idTown,
+      'ZipCodeFrom': fromZipCode,
+      'AddressLine1To': toAddressLine1,
+      'AddressLine2To': toAddressLine2,
+      'StateTo': toState?.idState,
+      'CityTo': toCity?.idCity,
+      'TownTo': toTown?.idTown,
+      'ZipCodeTo': toZipCode,
+      'Description': description,
+      'Amount': price,
+      'CreateDate': DateTime.now().toIso8601String(),
+      'Image': null,
+      'Quantity': quantity
     };
   }
 }

@@ -1,30 +1,32 @@
 class PriceOnlineRequest {
-  final int travel;
-  final int customer;
-  final int passengerNumber;
-  final String stateFrom;
-  final int cityFrom;
-  final int townFrom;
-  final String zipCodeFrom;
-  final String stateTo;
-  final int cityTo;
-  final int townTo;
-  final String zipCodeTo;
-  final int bag;
+  final int? travel;
+  final int? customer;
+  final int? passengerNumber;
+  final String? stateFrom;
+  final int? cityFrom;
+  final int? townFrom;
+  final String? zipCodeFrom;
+  final String? stateTo;
+  final int? cityTo;
+  final int? townTo;
+  final String? zipCodeTo;
+  final int? bag;
+  final int? item;
 
   PriceOnlineRequest({
-    required this.travel,
-    required this.customer,
-    required this.passengerNumber,
-    required this.stateFrom,
-    required this.cityFrom,
-    required this.townFrom,
-    required this.zipCodeFrom,
-    required this.stateTo,
-    required this.cityTo,
-    required this.townTo,
-    required this.zipCodeTo,
-    required this.bag,
+    this.travel,
+    this.customer,
+    this.passengerNumber,
+    this.stateFrom,
+    this.cityFrom,
+    this.townFrom,
+    this.zipCodeFrom,
+    this.stateTo,
+    this.cityTo,
+    this.townTo,
+    this.zipCodeTo,
+    this.bag,
+    this.item
   });
 
   // Método para convertir un JSON a un objeto PriceOnlineRequest

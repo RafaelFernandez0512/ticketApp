@@ -29,7 +29,7 @@ class TravelsPage extends GetView<TravelsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Travels / Services',
+        title: Text('Reservations',
             style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
       ),

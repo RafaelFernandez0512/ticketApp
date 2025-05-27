@@ -1,5 +1,5 @@
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/service/api_service.dart';
@@ -8,12 +8,15 @@ import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
 
 class MyBookingsController extends GetxController
     with StateMixin<List<Reservation>> {
+  late final EasyInfiniteDateTimelineController controllerPicker;
   final ApiService apiService = Get.find<ApiService>();
-  Rx<DateTime>? selectedDate = DateTime.now().obs;
+  Rx<DateTime>? selectedDate;
   var serviceType = 0.obs;
   @override
   void onInit() {
     super.onInit();
+    selectedDate ??= DateTime.now().obs;
+    controllerPicker = EasyInfiniteDateTimelineController();
     serviceType = 0.obs;
   }
 
@@ -23,10 +26,12 @@ class MyBookingsController extends GetxController
   }
 
   Future<void> fetch() async {
+    controllerPicker.animateToFocusDate();
     change([], status: RxStatus.loading());
     try {
-      var data = await apiService
-          .getReservations(selectedDate?.value ?? DateTime.now());
+      var data = serviceType.value == 0
+          ? await apiService.getReservations(selectedDate?.value)
+          : await apiService.getService(selectedDate?.value);
 
       change(data, status: RxStatus.success());
     } catch (e) {
@@ -53,7 +58,7 @@ class MyBookingsController extends GetxController
         const GetSnackBar(
           title: "Payment Not Allowed",
           message: "Payments are only allowed before the departure date.",
-          duration: const Duration(seconds: 3),
+          duration: Duration(seconds: 3),
           backgroundColor: CupertinoColors.systemRed,
         ),
       );

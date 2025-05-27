@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:fluent_validation/models/validation_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizer/sizer.dart';
+import 'package:ticket_app/data/model/Item_type.dart';
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/create_reservation.dart';
 import 'package:ticket_app/data/model/customer_address.dart';
@@ -16,6 +22,7 @@ import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
+import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/utils/Validators/create_reservation_validator.dart';
 
 class CreateBookingController extends GetxController with StateMixin {
@@ -32,6 +39,7 @@ class CreateBookingController extends GetxController with StateMixin {
   var citiesFrom = <City>[];
   var citiesTo = <City>[];
   var schedule = <Schedule>[];
+  var items = <ItemType>[];
   var addressLine1From = '';
   var fromZipCode = '';
   var addressLine2From = '';
@@ -73,8 +81,7 @@ class CreateBookingController extends GetxController with StateMixin {
           final addressToFuture = apiService.getCustomerAddress(toId);
           final citiesFromFuture = getCities(fromId);
           final citiesToFuture = getCities(toId);
-
-  
+          final items = apiService.getItems();
 
           // Wait for all in parallel
           final results = await Future.wait<dynamic>([
@@ -82,13 +89,14 @@ class CreateBookingController extends GetxController with StateMixin {
             addressToFuture,
             citiesFromFuture,
             citiesToFuture,
+            items
           ]);
 
           customerAddressFrom = results[0];
           customerAddressTo = results[1];
           citiesFrom = results[2];
           citiesTo = results[3];
-         
+          this.items = results[4];
         }
       }
 
@@ -97,20 +105,22 @@ class CreateBookingController extends GetxController with StateMixin {
         statesFuture,
         fetchCitiesAndAddresses(),
       ]);
-                var username = Get.find<SessionService>().getSession()?.username;
-          var customer = await apiService.getCustomer(username??'');
-          if(customer!=null && customer.state==createReservation.value.travel?.stateFrom?.idState){
-                      addressLine1From = customer.addressLine1??'';
-                      addressLine2From= customer.addressLine2??'';
-                      fromZipCode = customer.zipCode??'';
-                      var city = citiesFrom.where((x)=>x.idCity==customer.city).firstOrNull;
-                      if(city!=null){
-                        await  onChangeFromCity(city);
-                        createReservation.value.fromTown = townsFrom.where((x)=>x.idTown == customer.town).firstOrNull;
-                      }
-                      
-                    
-          }
+      var username = Get.find<SessionService>().getSession()?.username;
+      var customer = await apiService.getCustomer(username ?? '');
+      if (customer != null &&
+          customer.state ==
+              createReservation.value.travel?.stateFrom?.idState) {
+        addressLine1From = customer.addressLine1 ?? '';
+        addressLine2From = customer.addressLine2 ?? '';
+        fromZipCode = customer.zipCode ?? '';
+        var city =
+            citiesFrom.where((x) => x.idCity == customer.city).firstOrNull;
+        if (city != null) {
+          await onChangeFromCity(city);
+          createReservation.value.fromTown =
+              townsFrom.where((x) => x.idTown == customer.town).firstOrNull;
+        }
+      }
       await getSchedule(); // This one depends on the others, so it's awaited after
     } catch (e) {
       // Optionally handle the error
@@ -189,6 +199,12 @@ class CreateBookingController extends GetxController with StateMixin {
     });
   }
 
+  onChangeItem(int? id) async {
+    createReservation.update((val) {
+      val!.items = id;
+    });
+  }
+
   onChangeToState(StateModel? idstate) async {
     townsTo.clear();
     citiesTo.clear();
@@ -251,6 +267,12 @@ class CreateBookingController extends GetxController with StateMixin {
   void onChangedPassengerCount(num x) {
     createReservation.update((val) {
       val!.passengerCount = x.toInt();
+    });
+  }
+
+  void onChangedItemsCount(num x) {
+    createReservation.update((val) {
+      val!.quantity = x.toInt();
     });
   }
 
@@ -329,9 +351,16 @@ class CreateBookingController extends GetxController with StateMixin {
   Future<Reservation?> tryCreateReservation() async {
     try {
       EasyLoading.show(status: 'Loading...');
-      var message = await apiService.validReservation(
-          createReservation.value.travel!.travelNumber,
-          createReservation.value.customerId);
+      String? message = '';
+      if (createReservation.value.serviceType == 0) {
+        message = await apiService.validReservation(
+            createReservation.value.travel!.travelNumber,
+            createReservation.value.customerId);
+      } else {
+        message = await apiService.validService(
+            createReservation.value.travel!.travelNumber,
+            createReservation.value.customerId);
+      }
       if (message != null && message.isNotEmpty) {
         await Get.dialog(AlertDialog(
           title: const Text('Alert'),
@@ -347,7 +376,9 @@ class CreateBookingController extends GetxController with StateMixin {
 
         return null;
       }
-      var result = await apiService.createReservation(createReservation.value);
+      var result = createReservation.value.serviceType == 0
+          ? await apiService.createReservation(createReservation.value)
+          : await apiService.createServiceReservation(createReservation.value);
       if (result == null) {
         EasyLoading.dismiss(animation: true);
         Get.dialog(AlertDialog(
@@ -363,8 +394,17 @@ class CreateBookingController extends GetxController with StateMixin {
         ));
         return null;
       }
-      var confirm = await apiService.changeStatusReservation(
-          result.reservationNumber, 'CO', 'Reservation');
+      createReservation.value.id = result.reservationNumber;
+      if (createReservation.value.serviceType == 0) {
+        await apiService.changeStatusReservation(
+            result.reservationNumber, 'CO', 'Reservation');
+      } else {
+        await apiService.changeStatusReservation(
+            result.reservationNumber, 'I', 'Service');
+        await apiService.postImageToService(
+            result.reservationNumber, createReservation.value.photo!);
+      }
+
       EasyLoading.dismiss(animation: true);
       return result;
     } catch (e) {
@@ -400,7 +440,9 @@ class CreateBookingController extends GetxController with StateMixin {
         zipCodeTo: createReservation.value.toZipCode!,
         bag: createReservation.value.bagsCount!,
       );
-      var price = await apiService.calculatePrice(priceOnlineRequest);
+      var price = createReservation.value.serviceType == 0
+          ? await apiService.calculatePrice(priceOnlineRequest)
+          : await apiService.calculatePriceService(priceOnlineRequest);
       if (price == null) {
         EasyLoading.dismiss(animation: true);
         Get.dialog(AlertDialog(
@@ -417,7 +459,9 @@ class CreateBookingController extends GetxController with StateMixin {
         return false;
       }
       createReservation.update((val) {
-        val!.price = price.priceWithDiscount;
+        val!.price = (price.priceWithDiscount ?? 0) > 0
+            ? price.priceWithDiscount
+            : price.priceWithoutDiscount;
         val.fromFullAddress =
             '${val.fromAddressLine1}, ${val.fromAddressLine2} ${val.fromZipCode}';
         val.toFullAddress =
@@ -443,17 +487,16 @@ class CreateBookingController extends GetxController with StateMixin {
   }
 
   bool validReservation() {
-    final CreateReservationValidator createReservationValidator =
-        CreateReservationValidator();
+    var createReservationValidator = createReservation.value.serviceType == 0
+        ? CreateReservationValidator()
+        : CreateServiceReservationValidator();
     final ValidationResult validationResult =
         createReservationValidator.validate(createReservation.value);
 
     if (validationResult.hasError) {
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
-        content: Text(validationResult.errors
-            .map((x) => x.message)
-            .join('\n')),
+        content: Text(validationResult.errors.map((x) => x.message).join('\n')),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -469,6 +512,58 @@ class CreateBookingController extends GetxController with StateMixin {
 
   var disableAddress = false.obs;
   var disableAddressTo = false.obs;
+
+  onDescription(String? p1) {
+    createReservation.value.description = p1 ?? '';
+  }
+
+  Future pickPhoto(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+    var action = await Get.dialog<String?>(AlertDialog(
+      title: Text(
+        'Select an Action',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomButton(
+            label: 'Take Photo',
+            fullSize: true,
+            iconAlignment: IconAlignment.start,
+            icon: const Icon(Icons.camera_alt, color: Colors.white),
+            onPressed: () => Get.back<String>(result: '0'),
+          ),
+          const Divider(),
+          CustomButton(
+            label: 'Choose from Gallery',
+            fullSize: true,
+            iconAlignment: IconAlignment.start,
+            icon: const Icon(Icons.photo_album, color: Colors.white),
+            onPressed: () => Get.back<String>(result: '1'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('Close'),
+        ),
+      ],
+    ));
+    if (action?.isNotEmpty ?? false) {
+      final XFile? image = await picker.pickImage(
+          source: action == "0" ? ImageSource.camera : ImageSource.gallery);
+      if (image != null) {
+        final bytes = await File(image.path).readAsBytes();
+        final base64String = base64Encode(bytes);
+        createReservation.update((val) {
+          val!.photo = base64String;
+        });
+        update();
+      }
+    }
+  }
 
   Future onFromCustomerAddress(CustomerAddress? x) async {
     townsFrom.clear();
@@ -487,7 +582,7 @@ class CreateBookingController extends GetxController with StateMixin {
 
   Future onToCustomerAddress(CustomerAddress? x) async {
     townsTo.clear();
-     townsTo = await getTowns(x!.city!.idCity);
+    townsTo = await getTowns(x!.city!.idCity);
     createReservation.value.toCity =
         citiesTo.where((x) => x.idCity == x.idCity).firstOrNull;
     createReservation.value.toTown = x.town;

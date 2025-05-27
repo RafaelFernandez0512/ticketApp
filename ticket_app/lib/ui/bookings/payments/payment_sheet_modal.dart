@@ -17,8 +17,9 @@ class PaymentSheetModal {
   static Future<String> _initPaymentSheet(
       BuildContext context, Reservation reservation) async {
     try {
-      // 1. create payment intent on the server
-      // 2. initialize the payment sheet
+      var description = reservation.serviceType == 0
+          ? 'Payment for reservation number: ${reservation.reservationNumber}'
+          : 'Payment for service number: ${reservation.reservationNumber}';
       final data = await Get.find<PaymentService>().createPaymentIntent(
           name: reservation.customer?.fullName ?? '',
           address: reservation.addressLine1From,
@@ -27,21 +28,15 @@ class PaymentSheetModal {
           state: reservation.stateFrom?.name ?? '',
           country: 'US',
           currency: 'usd',
-          description:
-              'Payment for reservation number: ${reservation.reservationNumber}',
+          description: description,
           amount: reservation.amount ?? 0);
 
-      // 2. initialize the payment sheet
       await _stripe.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
-          // Enable custom flow
           customFlow: true,
-
-          // Main params
           merchantDisplayName: 'Door to Door',
           paymentIntentClientSecret: data['client_secret'],
           customerId: data['customer'],
-          // Extra options
           style: ThemeMode.light,
         ),
       );
@@ -78,11 +73,12 @@ class PaymentSheetModal {
       // 3. display the payment sheet.
       await _stripe.presentPaymentSheet();
       await _stripe.confirmPaymentSheetPayment();
+      var description = reservation.serviceType == 0
+          ? 'Payment for reservation number: ${reservation.reservationNumber}'
+          : 'Payment for service number: ${reservation.reservationNumber}';
       if (context.mounted) {
-        await Get.find<PaymentController>().onSubmit(
-            reservation,
-            'Payment for reservation number: ${reservation.reservationNumber}',
-            id);
+        await Get.find<PaymentController>()
+            .onSubmit(reservation, description, id);
       }
       return true;
     } on Exception catch (e) {
