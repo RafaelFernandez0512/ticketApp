@@ -265,7 +265,7 @@ class MyTicketReservationView extends StatelessWidget {
                         child: Row(
                           children: [
                             gapW8,
-                            Text('items:',
+                            Text('Item:',
                                 style: Theme.of(context).textTheme.titleMedium),
                             gapW12,
                             Text(ticket.items?.description ?? '',

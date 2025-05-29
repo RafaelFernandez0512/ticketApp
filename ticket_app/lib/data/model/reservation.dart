@@ -69,57 +69,60 @@ class Reservation {
       required this.payment,
       this.items,
       this.photo,
-      this.serviceType,
+      this.serviceType = 0,
       this.quantity});
 
 // Factory method to create a Reservation object from JSON
   factory Reservation.fromJson(Map<String, dynamic> json) {
     return Reservation(
-      reservationNumber: json['ReservationNumber'] as int,
-      departureDate: json['DepartureDate'] != null
-          ? DateTime.parse(json['DepartureDate'] as String).toLocal()
-          : null,
-      departureDateFilter: json['DepartureDateFilter'] != null
-          ? DateTime.parse(json['DepartureDateFilter'] as String)
-          : null,
-      createDate: json['CreateDate'] != null
-          ? DateTime.parse(json['CreateDate'] as String)
-          : null,
-      oneWay: json['OneWay'] as bool?,
-      roundTrip: json['RoundTrip'] as bool?,
-      passengerNumber: json['PassengerNumber'] as int?,
-      addressLine1From: json['AddressLine1From'] as String? ?? '',
-      addressLine2From: json['AddressLine2From'] as String?,
-      zipCodeFrom: json['ZipCodeFrom'] as String?,
-      addressLine1To: json['AddressLine1To'] as String? ?? '',
-      addressLine2To: json['AddressLine2To'] as String?,
-      zipCodeTo: json['ZipCodeTo'] as String?,
-      description: json['Description'] as String?,
-      bag: json['Bag'] as int?,
-      amount:
-          json['Amount'] != null ? (json['Amount'] as num).toDouble() : null,
-      stateFrom: json['StateFrom'] != null
-          ? StateModel.fromJson(json['StateFrom'])
-          : null,
-      stateTo:
-          json['StateTo'] != null ? StateModel.fromJson(json['StateTo']) : null,
-      cityFrom:
-          json['CityFrom'] != null ? City.fromJson(json['CityFrom']) : null,
-      cityTo: json['CityTo'] != null ? City.fromJson(json['CityTo']) : null,
-      townFrom:
-          json['TownFrom'] != null ? Town.fromJson(json['TownFrom']) : null,
-      townTo: json['TownTo'] != null ? Town.fromJson(json['TownTo']) : null,
-      travel: json['Travel'] != null ? Travel.fromJson(json['Travel']) : null,
-      status: json['ReservationStatus'] != null
-          ? ReservationStatus.fromJson(json['ReservationStatus'])
-          : null,
-      customer:
-          json['Customer'] != null ? Customer.fromJson(json['Customer']) : null,
-      payment: (json['Payments'] as List<dynamic>?)
-              ?.map((e) => PaymentResponse.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-    );
+        reservationNumber: json['ReservationNumber'] as int,
+        departureDate: json['DepartureDate'] != null
+            ? DateTime.parse(json['DepartureDate'] as String).toLocal()
+            : null,
+        departureDateFilter: json['DepartureDateFilter'] != null
+            ? DateTime.parse(json['DepartureDateFilter'] as String)
+            : null,
+        createDate: json['CreateDate'] != null
+            ? DateTime.parse(json['CreateDate'] as String)
+            : null,
+        oneWay: json['OneWay'] as bool?,
+        roundTrip: json['RoundTrip'] as bool?,
+        passengerNumber: json['PassengerNumber'] as int?,
+        addressLine1From: json['AddressLine1From'] as String? ?? '',
+        addressLine2From: json['AddressLine2From'] as String?,
+        zipCodeFrom: json['ZipCodeFrom'] as String?,
+        addressLine1To: json['AddressLine1To'] as String? ?? '',
+        addressLine2To: json['AddressLine2To'] as String?,
+        zipCodeTo: json['ZipCodeTo'] as String?,
+        description: json['Description'] as String?,
+        bag: json['Bag'] as int?,
+        amount:
+            json['Amount'] != null ? (json['Amount'] as num).toDouble() : null,
+        stateFrom: json['StateFrom'] != null
+            ? StateModel.fromJson(json['StateFrom'])
+            : null,
+        stateTo: json['StateTo'] != null
+            ? StateModel.fromJson(json['StateTo'])
+            : null,
+        cityFrom:
+            json['CityFrom'] != null ? City.fromJson(json['CityFrom']) : null,
+        cityTo: json['CityTo'] != null ? City.fromJson(json['CityTo']) : null,
+        townFrom:
+            json['TownFrom'] != null ? Town.fromJson(json['TownFrom']) : null,
+        townTo: json['TownTo'] != null ? Town.fromJson(json['TownTo']) : null,
+        travel: json['Travel'] != null ? Travel.fromJson(json['Travel']) : null,
+        status: json['ReservationStatus'] != null
+            ? ReservationStatus.fromJson(json['ReservationStatus'])
+            : null,
+        customer: json['Customer'] != null
+            ? Customer.fromJson(json['Customer'])
+            : null,
+        payment: (json['Payments'] as List<dynamic>?)
+                ?.map(
+                    (e) => PaymentResponse.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            [],
+        serviceType: 0);
   }
   factory Reservation.fromServiceJson(Map<String, dynamic> json) {
     return Reservation(

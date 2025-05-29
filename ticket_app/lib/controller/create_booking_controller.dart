@@ -439,6 +439,7 @@ class CreateBookingController extends GetxController with StateMixin {
         cityTo: createReservation.value.toCity!.idCity,
         zipCodeTo: createReservation.value.toZipCode!,
         bag: createReservation.value.bagsCount!,
+        quantity:createReservation.value.quantity
       );
       var price = createReservation.value.serviceType == 0
           ? await apiService.calculatePrice(priceOnlineRequest)

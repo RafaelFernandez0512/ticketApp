@@ -555,6 +555,7 @@ class ApiService extends GetxService {
       'CityTo': value.cityTo.toString(),
       'TownTo': value.townTo.toString(),
       'ZipCodeTo': value.zipCodeTo,
+      'Quantity': value.quantity.toString(),
     };
 
     // Construye la URL con los parámetros

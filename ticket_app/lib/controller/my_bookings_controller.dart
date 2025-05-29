@@ -53,17 +53,6 @@ class MyBookingsController extends GetxController
   }
 
   onPayment(BuildContext context, Reservation reservation) async {
-    if (DateTime.now().isAfter(reservation.departureDate!)) {
-      Get.showSnackbar(
-        const GetSnackBar(
-          title: "Payment Not Allowed",
-          message: "Payments are only allowed before the departure date.",
-          duration: Duration(seconds: 3),
-          backgroundColor: CupertinoColors.systemRed,
-        ),
-      );
-      return;
-    }
     var value = await PaymentSheetModal.showModal(
       context,
       reservation,

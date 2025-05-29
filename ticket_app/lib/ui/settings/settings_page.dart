@@ -68,7 +68,7 @@ class SettingsPage extends GetView<SettingsController> {
 
                       // Opciones de configuración
                       Visibility(
-                        visible: controller.showScanner.value ?? false,
+                        visible: true,
                         child: Column(
                           children: [
                             ListTile(

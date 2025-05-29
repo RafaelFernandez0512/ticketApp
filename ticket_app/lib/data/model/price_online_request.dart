@@ -12,22 +12,23 @@ class PriceOnlineRequest {
   final String? zipCodeTo;
   final int? bag;
   final int? item;
+  final int? quantity;
 
-  PriceOnlineRequest({
-    this.travel,
-    this.customer,
-    this.passengerNumber,
-    this.stateFrom,
-    this.cityFrom,
-    this.townFrom,
-    this.zipCodeFrom,
-    this.stateTo,
-    this.cityTo,
-    this.townTo,
-    this.zipCodeTo,
-    this.bag,
-    this.item
-  });
+  PriceOnlineRequest(
+      {this.travel,
+      this.customer,
+      this.passengerNumber,
+      this.stateFrom,
+      this.cityFrom,
+      this.townFrom,
+      this.zipCodeFrom,
+      this.stateTo,
+      this.cityTo,
+      this.townTo,
+      this.zipCodeTo,
+      this.bag,
+      this.item,
+      this.quantity});
 
   // Método para convertir un JSON a un objeto PriceOnlineRequest
   factory PriceOnlineRequest.fromJson(Map<String, dynamic> json) {
@@ -62,6 +63,7 @@ class PriceOnlineRequest {
       'TownTo': townTo,
       'ZipCodeTo': zipCodeTo,
       'Bag': bag,
+      'Quantity': quantity
     };
   }
 }

@@ -24,8 +24,11 @@ class ConfirmationTicketView extends StatelessWidget {
       color: Colors.white,
       child: Column(
         children: [
-          Base64ImageWithFallback(
-              base64String: ticket.photo!, height: 45.sp, width: 70.sp),
+          Visibility(
+            visible: ticket.photo != null,
+            child: Base64ImageWithFallback(
+                base64String: ticket.photo, height: 45.sp, width: 70.sp),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
             child: Row(
@@ -267,10 +270,10 @@ class ConfirmationTicketView extends StatelessWidget {
                               color: Colors.grey,
                             ),
                             gapW8,
-                            Text('Items:',
+                            Text('Quantity:',
                                 style: Theme.of(context).textTheme.titleMedium),
                             gapW8,
-                            Text(ticket.items.toString(),
+                            Text(ticket.quantity.toString(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium

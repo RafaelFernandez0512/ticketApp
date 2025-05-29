@@ -46,7 +46,8 @@ class CreateReservation {
       required this.customerId,
       this.travel,
       this.description,
-      this.quantity, this.id});
+      this.quantity = 1,
+      this.id});
 
   String? description;
 

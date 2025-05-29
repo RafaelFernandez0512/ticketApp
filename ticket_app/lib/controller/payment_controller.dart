@@ -39,13 +39,7 @@ class PaymentController extends GetxController {
     var response = await _apiService.payment(payment.value);
 
     if (response != null) {
-      if (reservation.serviceType == 0) {
-        await _apiService.changeStatusReservation(
-            reservation.reservationNumber, 'PA', 'Reservation');
-      } else {
-        await _apiService.changeStatusReservation(
-            reservation.reservationNumber, 'P', 'Service');
-      }
+   
       Get.snackbar('Success',
           'Payment processed successfully. Your ticket was sent to your email',
           snackPosition: SnackPosition.BOTTOM,

@@ -7,14 +7,13 @@ import 'package:ticket_app/data/service/api_service.dart';
 
 class QRPage extends StatefulWidget {
   ApiService apiService = Get.find<ApiService>();
-   QRPage( {Key? key}) : super(key: key);
+  QRPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _QrStatePage();
 }
 
 class _QrStatePage extends State<QRPage> {
-  
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -33,28 +32,33 @@ class _QrStatePage extends State<QRPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(
-          title: Text('Scan Ticket'),
-          leading: BackButton(
-            color: Colors.white,
-            onPressed: () {
-              Get.back();
-            },
-          ),
-          actions: [
-            ElevatedButton(
-                            onPressed: () async {
-                              await controller?.toggleFlash();
-                              setState(() {});
-                            },
-                            child: FutureBuilder(
-                              future: controller?.getFlashStatus(),
-                              builder: (context, snapshot) {
-                                return Icon(snapshot.data??false?Icons.flash_on:Icons.flash_off);
-                              },
-                            )),
-          ],
+      appBar: AppBar(
+        title: Text('Scan Ticket'),
+        leading: BackButton(
+          color: Colors.white,
+          onPressed: () {
+            Get.back();
+          },
         ),
+        actions: [
+          ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent)),
+              onPressed: () async {
+                await controller?.toggleFlash();
+                setState(() {});
+              },
+              child: FutureBuilder(
+                future: controller?.getFlashStatus(),
+                builder: (context, snapshot) {
+                  return Icon(
+                    snapshot.data ?? false ? Icons.flash_on : Icons.flash_off,
+                    color: Colors.white,
+                  );
+                },
+              )),
+        ],
+      ),
       body: Column(
         children: <Widget>[
           Expanded(flex: 4, child: _buildQrView(context)),
@@ -65,7 +69,8 @@ class _QrStatePage extends State<QRPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                     Text('Scan a code',style: Theme.of(context).textTheme.titleMedium),
+                  Text('Scan a code',
+                      style: Theme.of(context).textTheme.titleMedium),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -91,7 +96,6 @@ class _QrStatePage extends State<QRPage> {
                       )
                     ],
                   ),
-                 
                 ],
               ),
             ),
@@ -127,11 +131,12 @@ class _QrStatePage extends State<QRPage> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) async {
-        var message =   await widget.apiService.verifyStatusReservation(Get.arguments as int);
-        await  Get.dialog(
+      var message = await widget.apiService
+          .verifyStatusReservation(int.tryParse(scanData.code ?? '') ?? -1);
+      await Get.dialog(
         AlertDialog(
           title: const Text('Alert'),
-          content:  Text(message),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Get.back(),
@@ -140,7 +145,7 @@ class _QrStatePage extends State<QRPage> {
           ],
         ),
       );
-      setState(()  {
+      setState(() {
         result = scanData;
       });
     });
