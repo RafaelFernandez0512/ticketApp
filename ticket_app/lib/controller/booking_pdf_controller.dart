@@ -24,7 +24,7 @@ class BookingPdfPageController extends GetxController
       change('', status: RxStatus.loading());
       try {
         var data = await apiService.getReservationPdf(
-            'TicketTravel', payment.idPayment!);
+            'TicketTravel', payment.idPayment!);  
         change(data, status: RxStatus.success());
       } catch (e) {
         change('', status: RxStatus.error(e.toString()));

@@ -9,6 +9,7 @@ import 'package:ticket_app/ui/widgets/custom_bottom_segmented_item.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/ui/widgets/custom_datepicker.dart';
 import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
+import 'package:ticket_app/ui/widgets/empty_view.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/notification_type.dart';
 
@@ -182,20 +183,28 @@ class TravelsPage extends GetView<TravelsController> {
                 ),
                 gapH20,
                 controller.obx(
-                    (state) => Column(
-                          children: state is! List<Travel>
-                              ? []
-                              : (state as List<Travel>?)
-                                      ?.map((x) => GestureDetector(
-                                            onTap: () {
-                                              controller.tapTravel(x);
-                                            },
-                                            child: TicketView(
-                                                ticket: x.toTicket()),
-                                          ))
-                                      .toList() ??
-                                  [],
-                        ),
+                    (state) => state is! List<Travel> ||
+                            ((state as List<Travel>?)?.isEmpty ?? true)
+                        ? EmptyView(
+                            title: controller.serviceType.value == 0
+                                ? 'No buses available'
+                                : 'No services available',
+                            message: controller.serviceType.value == 0
+                                ? 'There are currently no buses available for the selected date or route. Please try again later or adjust your search.'
+                                : 'No services are currently available. Please check back later or try selecting a different date or category.',
+                            imagePath: 'assets/travels.png')
+                        : Column(
+                            children: (state as List<Travel>?)
+                                    ?.map((x) => GestureDetector(
+                                          onTap: () {
+                                            controller.tapTravel(x);
+                                          },
+                                          child:
+                                              TicketView(ticket: x.toTicket()),
+                                        ))
+                                    .toList() ??
+                                [],
+                          ),
                     onLoading: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

@@ -18,7 +18,6 @@ import 'package:ticket_app/utils/gaps.dart';
 class EditProfileController extends GetxController with StateMixin<Customer?> {
   Rx<Customer?>? customerRx;
   var apiService = Get.find<ApiService>();
-
   @override
   void onInit() async {
     super.onInit();
@@ -79,9 +78,7 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
       EasyLoading.dismiss();
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
-        content: Text(validationResult.errors
-            .map((x) => x.message)
-            .join('\n')),
+        content: Text(validationResult.errors.map((x) => x.message).join('\n')),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -92,6 +89,17 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
       return false;
     }
     return true;
+  }
+
+  onChangeDateOfBirth(DateTime? value) {
+    customerRx?.update((val) {
+      val!.birthday = value;
+    });
+  }
+
+  void onChangeGender(String s) {
+    customerRx?.value?.gender = s;
+    update();
   }
 
   deleteAccount() async {

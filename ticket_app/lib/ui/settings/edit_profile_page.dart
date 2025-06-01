@@ -9,6 +9,7 @@ import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/state.dart';
 import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
+import 'package:ticket_app/ui/widgets/custom_datepicker.dart';
 import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
 import 'package:ticket_app/ui/widgets/custom_text_field.dart';
 import 'package:ticket_app/utils/gaps.dart';
@@ -90,6 +91,78 @@ class EditProfilePage extends GetView<EditProfileController> {
                                   controller.customerRx?.value?.lastName,
                               labelText: 'Last Name',
                               onChanged: controller.onChangeLastName),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Gender',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: CustomTheme.primaryLightColor),
+                              ),
+                              Obx(() => Wrap(
+                                    alignment: WrapAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 150,
+                                        child: RadioListTile<String>(
+                                          title: Text(
+                                            'Male',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                          value: 'M',
+                                          groupValue:controller
+                                              .customerRx?.value?.gender,
+                                          onChanged: (value) {
+                                            controller.onChangeGender(value!);
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 150,
+                                        child: RadioListTile<String>(
+                                          title: Text(
+                                            'Female',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                          value: 'F',
+                                          groupValue:controller
+                                              .customerRx?.value?.gender,
+                                          onChanged: (value) {
+                                            controller.onChangeGender(value!);
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 150,
+                                        child: RadioListTile<String>(
+                                          title: Text(
+                                            'Other',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                          value: 'O',
+                                          groupValue: controller
+                                              .customerRx?.value?.gender,
+                                          onChanged: (value) {
+                                            controller.onChangeGender(value!);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            ],
+                          ),
+                          Obx(() => CustomDatePicker(
+                              labelText: 'Date of Birth',
+                              finalDefaultValue:
+                                  controller.customerRx?.value?.birthday,
+                              onChanged: controller.onChangeDateOfBirth)),
                           CustomTextField(
                               initialValue:
                                   controller.customerRx?.value?.phoneNumber,

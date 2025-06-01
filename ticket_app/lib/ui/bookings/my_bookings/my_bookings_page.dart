@@ -6,6 +6,7 @@ import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/ui/bookings/my_bookings/components/my_ticket_reservation_view.dart';
 import 'package:ticket_app/ui/widgets/custom_bottom_segmented_control.dart';
 import 'package:ticket_app/ui/widgets/custom_bottom_segmented_item.dart';
+import 'package:ticket_app/ui/widgets/empty_view.dart';
 import 'package:ticket_app/utils/gaps.dart';
 import 'package:ticket_app/utils/utils.dart';
 
@@ -138,26 +139,38 @@ class MyBookingsPage extends GetView<MyBookingsController> {
                       ),
                       const Divider(),
                       controller.obx(
-                        (state) => Expanded(
-                          child: ListView.builder(
-                            itemCount: state!.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  // controller.onTap(index);
-                                },
-                                child: MyTicketReservationView(
-                                  ticket: state[index],
-                                  onTapReceive: () => controller.onTap(index),
-                                  onTapPayment: () async {
-                                    await controller.onPayment(
-                                        context, state[index]);
+                        (state) => (state?.isEmpty ?? true)
+                            ? EmptyView(
+                                title: controller.serviceType.value == 0
+                                    ? 'No bus trips booked'
+                                    : 'No services booked',
+                                message: controller.serviceType.value == 0
+                                    ? 'You haven’t booked any bus trips yet. Once you make a reservation, your upcoming trips will appear here.'
+                                    : 'You haven’t booked any services yet. Your scheduled services will show up here once you make a reservation.',
+                                imagePath: controller.serviceType.value == 0
+                                    ? 'assets/transporte.png'
+                                    : 'assets/empaquetar.png')
+                            : Expanded(
+                                child: ListView.builder(
+                                  itemCount: state!.length,
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        // controller.onTap(index);
+                                      },
+                                      child: MyTicketReservationView(
+                                        ticket: state[index],
+                                        onTapReceive: () =>
+                                            controller.onTap(index),
+                                        onTapPayment: () async {
+                                          await controller.onPayment(
+                                              context, state[index]);
+                                        },
+                                      ),
+                                    );
                                   },
                                 ),
-                              );
-                            },
-                          ),
-                        ),
+                              ),
                         onLoading: const CircularProgressIndicator(),
                       )
                     ],

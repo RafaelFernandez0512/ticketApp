@@ -131,6 +131,7 @@ class _QrStatePage extends State<QRPage> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) async {
+      controller.stopCamera();
       var message = await widget.apiService
           .verifyStatusReservation(int.tryParse(scanData.code ?? '') ?? -1);
       await Get.dialog(
@@ -147,6 +148,9 @@ class _QrStatePage extends State<QRPage> {
       );
       setState(() {
         result = scanData;
+      });
+      Future.delayed(const Duration(microseconds: 500), () {
+        controller.resumeCamera();
       });
     });
   }

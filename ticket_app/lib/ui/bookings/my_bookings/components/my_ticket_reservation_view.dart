@@ -455,16 +455,24 @@ class MyTicketReservationView extends StatelessWidget {
           children: [
             Text('PAID',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700, color: Color(0xFF60C664))),
-            gapH12,
-            CustomButton(
-              label: 'Tap to view',
-              icon: Icon(
-                Icons.receipt_long,
-                color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF60C664))),
+            Visibility(
+              visible: reservation.serviceType == 0,
+              child: Column(
+                children: [
+                  gapH12,
+                  CustomButton(
+                    label: 'Tap to view',
+                    icon: const Icon(
+                      Icons.receipt_long,
+                      color: Colors.white,
+                    ),
+                    onPressed: onTapReceive,
+                  )
+                ],
               ),
-              onPressed: onTapReceive,
-            )
+            ),
           ],
         );
       default:

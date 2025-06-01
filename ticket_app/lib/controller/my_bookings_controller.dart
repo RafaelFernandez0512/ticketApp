@@ -26,7 +26,6 @@ class MyBookingsController extends GetxController
   }
 
   Future<void> fetch() async {
-    controllerPicker.animateToFocusDate();
     change([], status: RxStatus.loading());
     try {
       var data = serviceType.value == 0
@@ -34,6 +33,7 @@ class MyBookingsController extends GetxController
           : await apiService.getService(selectedDate?.value);
 
       change(data, status: RxStatus.success());
+      controllerPicker.animateToFocusDate();
     } catch (e) {
       change([], status: RxStatus.error(e.toString()));
     }

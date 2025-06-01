@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,8 +29,9 @@ Future<void> initServices() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   var sharedPreferences = await SharedPreferences.getInstance();
+  Get.put<Stripe>(Stripe.instance, permanent: true);
   Get.put<SharedPreferences>(sharedPreferences, permanent: true);
   Get.lazyPut<SessionService>(() => SessionService());
-  Get.lazyPut<AuthService>(() => AuthService(urlApi));
+  Get.put<AuthService>(AuthService(urlApi),permanent: true);
   Get.lazyPut<ApiService>(() => ApiService(urlApi));
 }

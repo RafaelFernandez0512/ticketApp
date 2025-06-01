@@ -10,6 +10,6 @@ class SplashBinding implements Bindings {
   void dependencies() {
     Get.lazyPut<SplashController>(() => SplashController());
     Get.lazyPut<PaymentService>(() => PaymentService());
-    Get.lazyPut<Stripe>(() => Stripe.instance);
+
   }
 }
