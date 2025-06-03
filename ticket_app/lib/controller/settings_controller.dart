@@ -14,7 +14,8 @@ class SettingsController extends GetxController with StateMixin {
     await fetch();
   }
 
-  Future<void> fetch() async {
+  Future<void> fetch() async 
+  {
     var username = Get.find<SessionService>().getSession()?.username;
     var customer = await apiService.getCustomer(username ?? '');
     var application = await apiService.getApplicationUser(username ?? '');

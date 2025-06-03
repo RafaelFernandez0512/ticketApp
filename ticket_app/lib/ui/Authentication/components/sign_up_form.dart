@@ -241,7 +241,7 @@ class RegisterAddressForm extends StatelessWidget {
                       ?.where((x) => x.idCity == city)
                       .firstOrNull
                       ?.idCity,
-                  labelText: 'City',
+                  labelText: 'County (City)',
                   showSearchBox: true,
                   textEditingController: TextEditingController(),
                   valueProperty: "Id_City",
@@ -263,7 +263,7 @@ class RegisterAddressForm extends StatelessWidget {
                       ?.where((x) => x.idTown == town)
                       .firstOrNull
                       ?.idTown,
-                  labelText: 'Town',
+                  labelText: 'Town (Neighborhood)',
                   showSearchBox: true,
                   textEditingController: TextEditingController(),
                   valueProperty: "Id_Town",

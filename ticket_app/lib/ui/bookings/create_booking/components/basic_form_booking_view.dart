@@ -134,7 +134,7 @@ class BasicFormBookingView extends StatelessWidget {
                   await onChangedCity(
                       cities.where((y) => y.idCity == x).firstOrNull);
                 },
-                labelText: 'City',
+                labelText: 'County (City)',
                 enabled: !disableAddress,
                 selectedItem:
                     cities.where((x) => x.idCity == city).firstOrNull?.idCity,
@@ -154,7 +154,7 @@ class BasicFormBookingView extends StatelessWidget {
                 selectedItem: towns.isNotEmpty
                     ? towns.where((x) => x.idTown == idtown).firstOrNull?.idTown
                     : null,
-                labelText: 'Town',
+                labelText: 'Town (Neighborhood)',
                 showSearchBox: true,
                 textEditingController: TextEditingController(),
                 valueProperty: "Id_Town",

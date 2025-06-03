@@ -209,7 +209,7 @@ class EditProfilePage extends GetView<EditProfileController> {
                                           controller.customerRx?.value?.city)
                                       .firstOrNull
                                       ?.idCity,
-                                  labelText: 'City',
+                                  labelText: 'County (City)',
                                   showSearchBox: true,
                                   textEditingController:
                                       TextEditingController(),
@@ -237,7 +237,7 @@ class EditProfilePage extends GetView<EditProfileController> {
                                           controller.customerRx?.value?.town)
                                       .firstOrNull
                                       ?.idTown,
-                                  labelText: 'Town',
+                                  labelText: 'Town (Neighborhood)',
                                   showSearchBox: true,
                                   textEditingController:
                                       TextEditingController(),

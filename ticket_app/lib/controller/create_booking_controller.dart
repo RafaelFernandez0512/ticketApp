@@ -91,12 +91,13 @@ class CreateBookingController extends GetxController with StateMixin {
             citiesToFuture,
             items
           ]);
-
+  
           customerAddressFrom = results[0];
           customerAddressTo = results[1];
           citiesFrom = results[2];
           citiesTo = results[3];
           this.items = results[4];
+
         }
       }
 
@@ -570,7 +571,7 @@ class CreateBookingController extends GetxController with StateMixin {
     townsFrom.clear();
     townsFrom = await getTowns(x!.city!.idCity);
     createReservation.value.fromCity =
-        citiesFrom.where((x) => x.idCity == x.idCity).firstOrNull;
+        citiesFrom.where((d) => d.idCity == x.city?.idCity).firstOrNull;
     createReservation.value.fromTown = x.town;
     createReservation.value.idCustomerAddress = x.idCustomerAddress;
     addressLine1From = x.addressLine1 ?? '';
@@ -584,9 +585,11 @@ class CreateBookingController extends GetxController with StateMixin {
   Future onToCustomerAddress(CustomerAddress? x) async {
     townsTo.clear();
     townsTo = await getTowns(x!.city!.idCity);
+
+
     createReservation.value.toCity =
         citiesTo.where((x) => x.idCity == x.idCity).firstOrNull;
-    createReservation.value.toTown = x.town;
+    createReservation.value.toTown  = townsTo.where((d)=> d.idTown== x.town?.idTown).firstOrNull;
     createReservation.value.idCustomerAddressTo = x.idCustomerAddress;
     toAddressLine1 = x.addressLine1 ?? '';
     toAddressLine2 = x.addressLine2 ?? '';

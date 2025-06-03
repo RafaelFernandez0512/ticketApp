@@ -19,7 +19,7 @@ class TravelsController extends GetxController with StateMixin {
   void onInit() async {
     super.onInit();
     onSearch();
-  }
+  }         
 
   Future<void> getStates() async {
     var states = await apiService.getStates();
