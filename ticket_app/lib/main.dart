@@ -8,9 +8,11 @@ import 'package:sizer/sizer.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
+import 'package:ticket_app/data/service/payment_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/utils/constants.dart';
+import 'package:flutter_stripe_web/flutter_stripe_web.dart';
 
 void main() async {
   await initServices();
@@ -29,9 +31,13 @@ Future<void> initServices() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   var sharedPreferences = await SharedPreferences.getInstance();
+  
+  Stripe.publishableKey = '';
+  Stripe.merchantIdentifier = 'merchant.flutter.DoorToDoor';
   Get.put<Stripe>(Stripe.instance, permanent: true);
   Get.put<SharedPreferences>(sharedPreferences, permanent: true);
   Get.lazyPut<SessionService>(() => SessionService());
   Get.put<AuthService>(AuthService(urlApi),permanent: true);
-  Get.lazyPut<ApiService>(() => ApiService(urlApi));
+  Get.put<ApiService>( ApiService(urlApi),permanent: true);
+     Get.put<PaymentService>( PaymentService(),permanent: true);
 }

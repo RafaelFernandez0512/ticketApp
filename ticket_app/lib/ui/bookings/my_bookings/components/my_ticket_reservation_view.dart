@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
+import 'package:ticket_app/ui/bookings/payments/payment_web.dart';
 import 'package:ticket_app/ui/widgets/LayoutBuilderWidget.dart';
 import 'package:ticket_app/ui/widgets/base_64_image_with_fallback.dart';
 import 'package:ticket_app/ui/widgets/circle_shape.dart';
@@ -89,12 +91,12 @@ class MyTicketReservationView extends StatelessWidget {
                 Expanded(
                     child: Stack(
                   children: [
-                    const SizedBox(
+                     SizedBox(
                       height: 24,
                       child: LayoutBuilderWidget(
                         sections: 6,
                         color: Colors.black,
-                        width: 5,
+                        width: 5.sp,
                       ),
                     ),
                     Transform.rotate(
@@ -435,19 +437,23 @@ class MyTicketReservationView extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700, color: Colors.redAccent));
       case 'CO' || 'I':
-        return Row(
-          children: [
-            Expanded(
-              child: CustomButton(
-                  label: 'Pay',
-                  type: NotificationType.success,
-                  icon: const Icon(
-                    Icons.payments,
-                    color: Colors.white,
-                  ),
-                  onPressed: onTapPayment),
-            ),
-          ],
+        return Visibility(
+          visible: reservation.amount != null &&
+              reservation.amount! > 0,
+          child: Row(
+            children: [
+              Expanded(
+                child: CustomButton(
+                    label: 'Pay',
+                    type: NotificationType.success,
+                    icon: const Icon(
+                      Icons.payments,
+                      color: Colors.white,
+                    ),
+                    onPressed: onTapPayment),
+              ),
+            ],
+          ),
         );
       case 'PA' || 'P':
         return Row(

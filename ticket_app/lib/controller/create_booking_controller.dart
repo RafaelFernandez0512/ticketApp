@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fluent_validation/models/validation_result.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import 'package:ticket_app/controller/payment_controller.dart';
 import 'package:ticket_app/data/model/Item_type.dart';
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/create_reservation.dart';
@@ -343,6 +345,19 @@ class CreateBookingController extends GetxController with StateMixin {
     if (reservation == null) {
       return;
     }
+      if (kIsWeb) {
+   var value = (await Get.toNamed(Routes.PAYMENT, arguments: reservation));
+   if(value != null && value is Reservation ) {
+    change([], status: RxStatus.loading());
+          var description = reservation!.serviceType == 0
+          ? 'Payment for reservation number: ${reservation!.reservationNumber}'
+          : 'Payment for service number: ${reservation!.reservationNumber}';
+        await Get.find<PaymentController>()
+            .onSubmit(reservation!, description,value.reference);
+    Get.offAllNamed(Routes.HOME);
+   }
+    return;
+  }
     var canClose = await PaymentSheetModal.showModal(context, reservation!);
     if (canClose) {
       Get.offAllNamed(Routes.HOME);

@@ -1,10 +1,15 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ticket_app/controller/payment_controller.dart';
 import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
+import 'package:ticket_app/ui/bookings/payments/payment_web.dart';
+import 'package:ticket_app/ui/widgets/loading_button.dart';
 
 class MyBookingsController extends GetxController
     with StateMixin<List<Reservation>> {
@@ -53,6 +58,19 @@ class MyBookingsController extends GetxController
   }
 
   onPayment(BuildContext context, Reservation reservation) async {
+  if (kIsWeb) {
+   var value = (await Get.toNamed(Routes.PAYMENT, arguments: reservation));
+   if(value != null && value is Reservation ) {
+    change([], status: RxStatus.loading());
+          var description = reservation.serviceType == 0
+          ? 'Payment for reservation number: ${reservation.reservationNumber}'
+          : 'Payment for service number: ${reservation.reservationNumber}';
+        await Get.find<PaymentController>()
+            .onSubmit(reservation, description,value.reference);
+     await fetch();
+   }
+    return;
+  }
     var value = await PaymentSheetModal.showModal(
       context,
       reservation,

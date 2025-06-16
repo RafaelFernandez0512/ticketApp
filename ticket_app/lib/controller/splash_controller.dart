@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
-
+import 'package:flutter_stripe_web/flutter_stripe_web.dart';
 import '../routes/app_pages.dart';
 
 class SplashController extends GetxController with StateMixin {
@@ -64,7 +65,7 @@ class SplashController extends GetxController with StateMixin {
             .first
             .descripcion ??
         '';
-    Stripe.merchantIdentifier = 'DoorToDoor';
+    Stripe.merchantIdentifier = 'merchant.flutter.DoorToDoor';
 
     final Stripe stripe = Get.find<Stripe>();
     await stripe.applySettings();

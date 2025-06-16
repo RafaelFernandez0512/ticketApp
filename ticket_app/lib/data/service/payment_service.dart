@@ -50,6 +50,8 @@ class PaymentService {
       print(json);
       return json;
     } else {
+        var json = jsonDecode(response.body);
+            print(json);
       print("error in calling payment intent");
     }
   }

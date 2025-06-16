@@ -13,4 +13,5 @@ abstract class Routes {
   static const EDIT_PROFILE = '/edit-profile';
   static const RESERVATION_DETAIL = '/reservation-detail';
   static const QR_PAGE = '/qr-page';
+  static const PAYMENT_SUCCESS = '/payment-success';
 }

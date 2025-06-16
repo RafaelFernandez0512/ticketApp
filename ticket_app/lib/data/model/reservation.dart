@@ -70,7 +70,7 @@ class Reservation {
       this.items,
       this.photo,
       this.serviceType = 0,
-      this.quantity});
+      this.quantity,this.reference = ''});
 
 // Factory method to create a Reservation object from JSON
   factory Reservation.fromJson(Map<String, dynamic> json) {
@@ -176,6 +176,8 @@ class Reservation {
       serviceType: 1,
     );
   }
+
+  String reference;
   // Method to convert a Reservation object to JSON
   Map<String, dynamic> toJson() {
     return {
