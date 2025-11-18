@@ -8,8 +8,6 @@ import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
-import 'package:ticket_app/ui/bookings/payments/payment_web.dart';
-import 'package:ticket_app/ui/widgets/loading_button.dart';
 
 class MyBookingsController extends GetxController
     with StateMixin<List<Reservation>> {

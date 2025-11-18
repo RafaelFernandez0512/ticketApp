@@ -2,7 +2,6 @@ import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/employee.dart';
 import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/vehicle.dart';
 
 class Travel {
@@ -17,8 +16,6 @@ class Travel {
   final Employee? employee;
   final City? cityFrom;
   final City? cityTo;
-  final Town? townFrom;
-  final Town? townTo;
   final Schedule? schedule;
 
   Travel({
@@ -33,8 +30,6 @@ class Travel {
     required this.employee,
     required this.cityFrom,
     required this.cityTo,
-    required this.townFrom,
-    required this.townTo,
     required this.schedule,
   });
 
@@ -54,10 +49,7 @@ class Travel {
       cityFrom:
           json['CityFrom'] != null ? City.fromJson(json['CityFrom']) : null,
       cityTo: json['CityTo'] != null ? City.fromJson(json['CityTo']) : null,
-      townFrom:
-          json['TownFrom'] != null ? Town.fromJson(json['TownFrom']) : null,
-      townTo: json['TownTo'] != null ? Town.fromJson(json['TownTo']) : null,
-      vehicle: json['Vehicle'] != null
+         vehicle: json['Vehicle'] != null
           ? Vehicle.fromJson(json['Vehicle'])
           : null, // Manejo de vehículo nulo
       employee:

@@ -5,7 +5,6 @@ import 'package:ticket_app/data/model/payment.dart';
 import 'package:ticket_app/data/model/payment_response.dart';
 import 'package:ticket_app/data/model/reservation_status.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/travel.dart';
 
 class Reservation {
@@ -29,8 +28,6 @@ class Reservation {
   final StateModel? stateTo;
   final City? cityFrom;
   final City? cityTo;
-  final Town? townFrom;
-  final Town? townTo;
   final Travel? travel;
   final ReservationStatus? status;
   final Customer? customer;
@@ -61,8 +58,6 @@ class Reservation {
       required this.stateTo,
       required this.cityFrom,
       required this.cityTo,
-      required this.townFrom,
-      required this.townTo,
       required this.travel,
       required this.status,
       required this.customer,
@@ -107,10 +102,7 @@ class Reservation {
         cityFrom:
             json['CityFrom'] != null ? City.fromJson(json['CityFrom']) : null,
         cityTo: json['CityTo'] != null ? City.fromJson(json['CityTo']) : null,
-        townFrom:
-            json['TownFrom'] != null ? Town.fromJson(json['TownFrom']) : null,
-        townTo: json['TownTo'] != null ? Town.fromJson(json['TownTo']) : null,
-        travel: json['Travel'] != null ? Travel.fromJson(json['Travel']) : null,
+          travel: json['Travel'] != null ? Travel.fromJson(json['Travel']) : null,
         status: json['ReservationStatus'] != null
             ? ReservationStatus.fromJson(json['ReservationStatus'])
             : null,
@@ -159,10 +151,7 @@ class Reservation {
       cityFrom:
           json['CityFrom'] != null ? City.fromJson(json['CityFrom']) : null,
       cityTo: json['CityTo'] != null ? City.fromJson(json['CityTo']) : null,
-      townFrom:
-          json['TownFrom'] != null ? Town.fromJson(json['TownFrom']) : null,
-      townTo: json['TownTo'] != null ? Town.fromJson(json['TownTo']) : null,
-      travel: json['Travel'] != null ? Travel.fromJson(json['Travel']) : null,
+       travel: json['Travel'] != null ? Travel.fromJson(json['Travel']) : null,
       status: json['ServiceStatus'] != null
           ? ReservationStatus.fromJsonService(json['ServiceStatus'])
           : null,
@@ -189,10 +178,8 @@ class Reservation {
       'RoundTrip': roundTrip,
       'PassengerNumber': passengerNumber,
       'AddressLine1From': addressLine1From,
-      'AddressLine2From': addressLine2From,
       'ZipCodeFrom': zipCodeFrom,
       'AddressLine1To': addressLine1To,
-      'AddressLine2To': addressLine2To,
       'ZipCodeTo': zipCodeTo,
       'Description': description,
       'Bag': bag,
@@ -201,8 +188,6 @@ class Reservation {
       'StateTo': stateTo?.toJson(),
       'CityFrom': cityFrom?.toJson(),
       'CityTo': cityTo?.toJson(),
-      'TownFrom': townFrom?.toJson(),
-      'TownTo': townTo?.toJson(),
       'Travel': travel?.toJson(),
     };
   }

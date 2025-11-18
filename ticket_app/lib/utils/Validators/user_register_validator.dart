@@ -38,9 +38,7 @@ class UserRegisterAddressValidator extends AbstractValidator<UserRegister> {
         (value) => value != null && value.isNotEmpty, 'State is required.');
     ruleFor((user) => user.city, key: 'city')
         .must((value) => value != null, 'County (City) is required.');
-    ruleFor((user) => user.town, key: 'town')
-        .must((value) => value != null, 'Town (Neighborhood) is required.');
     ruleFor((user) => user.zipCode, key: 'zipCode').must(
-        (value) => value != null && value.isNotEmpty, 'Zip Code is required.');
+        (value) => value != null && value >0, 'Zip Code is required.');
   }
 }

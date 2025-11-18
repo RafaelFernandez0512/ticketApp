@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/booking_pdf_controller.dart';
-import 'package:ticket_app/ui/widgets/pdf_viewer_from_base_64.dart';
+
+import '../../widgets/pdf_viewer_from_base_64.dart';
 
 class BookingPdfPage extends GetView<BookingPdfPageController> {
   const BookingPdfPage({super.key});

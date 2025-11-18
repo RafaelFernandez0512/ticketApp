@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sizer/sizer.dart';
+import 'package:intl/intl.dart';
 import 'package:ticket_app/controller/payment_controller.dart';
 import 'package:ticket_app/data/model/Item_type.dart';
 import 'package:ticket_app/data/model/city.dart';
@@ -19,7 +18,7 @@ import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/data/model/service_type.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
+import 'package:ticket_app/data/model/zipcode.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
 import 'package:ticket_app/routes/app_pages.dart';
@@ -36,18 +35,14 @@ class CreateBookingController extends GetxController with StateMixin {
   var states = <StateModel>[];
   var customerAddressTo = <CustomerAddress>[];
   var customerAddressFrom = <CustomerAddress>[];
-  var townsFrom = <Town>[];
-  var townsTo = <Town>[];
   var citiesFrom = <City>[];
   var citiesTo = <City>[];
+    var zipcodesFrom = <ZipCode>[];
+  var zipcodesTo = <ZipCode>[];
   var schedule = <Schedule>[];
   var items = <ItemType>[];
   var addressLine1From = '';
-  var fromZipCode = '';
-  var addressLine2From = '';
   var toAddressLine1 = '';
-  var toAddressLine2 = '';
-  var toZipCode = '';
 
   var activeStep = 0.obs;
   var title = 'Create Booking';
@@ -65,11 +60,16 @@ class CreateBookingController extends GetxController with StateMixin {
     }
     loadData();
   }
+  bool fromValueComplete(){
+    return  createReservation.value.fromSate != null &&
+      createReservation.value.fromCity != null &&
+      createReservation.value.fromZipCode != null;
+  }
 
   void loadData() async {
     change(null, status: RxStatus.loading());
-    try {
-      // Start loading states in parallel
+    try { 
+      // Start loading states in parallel           
       final statesFuture = getStates();
 
       Future<void> fetchCitiesAndAddresses() async {
@@ -84,14 +84,15 @@ class CreateBookingController extends GetxController with StateMixin {
           final citiesFromFuture = getCities(fromId);
           final citiesToFuture = getCities(toId);
           final items = apiService.getItems();
-
+        final zipcodesFromFuture = apiService.getZipCodeById(createReservation.value.fromZipCode??0);
           // Wait for all in parallel
           final results = await Future.wait<dynamic>([
             addressFromFuture,
             addressToFuture,
             citiesFromFuture,
             citiesToFuture,
-            items
+            items,
+            zipcodesFromFuture
           ]);
   
           customerAddressFrom = results[0];
@@ -99,6 +100,7 @@ class CreateBookingController extends GetxController with StateMixin {
           citiesFrom = results[2];
           citiesTo = results[3];
           this.items = results[4];
+          zipcodesFrom = results[5];
 
         }
       }
@@ -114,14 +116,11 @@ class CreateBookingController extends GetxController with StateMixin {
           customer.state ==
               createReservation.value.travel?.stateFrom?.idState) {
         addressLine1From = customer.addressLine1 ?? '';
-        addressLine2From = customer.addressLine2 ?? '';
-        fromZipCode = customer.zipCode ?? '';
+        createReservation.value.toZipCode = customer.zipCode;
         var city =
             citiesFrom.where((x) => x.idCity == customer.city).firstOrNull;
         if (city != null) {
           await onChangeFromCity(city);
-          createReservation.value.fromTown =
-              townsFrom.where((x) => x.idTown == customer.town).firstOrNull;
         }
       }
       await getSchedule(); // This one depends on the others, so it's awaited after
@@ -143,12 +142,6 @@ class CreateBookingController extends GetxController with StateMixin {
     states = fetchedStates.toSet().toList();
   }
 
-  Future<List<Town>> getTowns(int idTown) async {
-    var fetchedTowns = await apiService.getTown(idTown);
-
-    // Eliminar duplicados basados en el ID
-    return fetchedTowns.toSet().toList();
-  }
 
   Future<List<City>> getCities(String idState) async {
     var fetchedCities = await apiService.getCity(idState);
@@ -173,32 +166,25 @@ class CreateBookingController extends GetxController with StateMixin {
   }
 
   onChangeFromState(StateModel? idstate) async {
-    townsFrom.clear();
     citiesFrom.clear();
     citiesFrom = await getCities(idstate!.idState);
     createReservation.update((val) {
       val!.fromSate = idstate;
       val.fromCity = null;
-      val.fromTown = null;
     });
   }
 
   onChangeFromCity(City? idCity) async {
-    townsFrom.clear();
-    townsFrom = await getTowns(idCity!.idCity);
+    zipcodesFrom = await apiService.getZipCode(idCity!.idCity);
     createReservation.update((val) {
       val!.fromCity = idCity;
-      val.fromTown = null;
     });
   }
 
   onChangeToCity(City? idCity) async {
-    townsTo.clear();
-    townsTo = await getTowns(idCity!.idCity);
-
+    zipcodesTo = await apiService.getZipCode(idCity!.idCity);
     createReservation.update((val) {
       val!.toCity = idCity;
-      val.toTown = null;
     });
   }
 
@@ -209,13 +195,11 @@ class CreateBookingController extends GetxController with StateMixin {
   }
 
   onChangeToState(StateModel? idstate) async {
-    townsTo.clear();
     citiesTo.clear();
     citiesTo = await getCities(idstate!.idState);
     createReservation.update((val) {
       val!.toState = idstate;
       val.toCity = null;
-      val.toTown = null;
     });
   }
 
@@ -227,46 +211,90 @@ class CreateBookingController extends GetxController with StateMixin {
 
   onFromChangedAddressLine1(String p1) {
     addressLine1From = p1;
+        createReservation.value.fromAddressLine1 = addressLine1From;
   }
 
   onFromChangedAddressLine2(String p1) {
-    addressLine2From = p1;
   }
 
-  onFromTown(Town? p1) {
-    createReservation.update((val) {
-      val!.fromTown = p1;
-    });
-  }
+  onFromZipCode(ZipCode? p1) async {
+    if(p1 == null) {
+      return;
+    }
+          createReservation.value.fromAddressLine1 = addressLine1From;
+      createReservation.value.fromZipCode = p1.idZipCode;
+    update();
 
-  onFromZipCode(String? p1) {
-    fromZipCode = p1 ?? '';
   }
 
   onToChangedAddressLine1(String? p1) {
     toAddressLine1 = p1 ?? '';
+         createReservation.value.toAddressLine1 = toAddressLine1;
   }
 
   onToChangedAddressLine2(String? p1) {
-    toAddressLine2 = p1 ?? '';
   }
 
-  onToTown(Town? p1) {
-    createReservation.update((val) {
-      val!.toTown = p1;
-    });
-  }
+  onToZipCode(ZipCode? p1) async {
+        if(p1 == null) {
+      return;
+    }
+    createReservation.value.toZipCode = p1?.idZipCode;
+          createReservation.value.toAddressLine1 = toAddressLine1;
+          if(p1.price <= 0){
+            createReservation.value.comment ='';
+            return;
 
-  onToZipCode(String? p1) {
-    toZipCode = p1 ?? '';
-  }
+          }
+      if (!validReservation(ignoreAddress: true)) {
+          createReservation.value.toZipCode = null;
+            update();
+        return;
+      }
 
-  void onChangedBagsCount(num x) {
+      var value = await calculatePrice();
+      if(value){
+  var param =  await apiService.configurations(['CommentReservation']);
+
+      createReservation.value.comment =param.firstOrNull?.nota?.replaceAll(r'{CityTo.Name}', createReservation.value.toCity?.name ?? '').replaceAll(r'${precioZipCode}.', formatMoney(p1.price)) ?? '';
+      totalAmount = (createReservation.value.price ?? 0.0).obs;
+  
+      update();
+      }
+      if (!value) {
+        return;
+      }
+  }
+ String formatMoney(num? value) {
+    final v = value ?? 0;
+    final f = NumberFormat.currency(locale: 'en_US', symbol: '\$');
+    return f.format(v);
+  }
+  Future onChangedBagsCount(num x) async {
+     createReservation.value.bagsCount = x.toInt();
+
+     var zipcode = zipcodesTo.where((t)=>
+          t.idZipCode == createReservation.value.toZipCode ).firstOrNull;
+          if(zipcode == null || zipcode.price <= 0){
+            createReservation.value.comment ='';
+            return; 
+
+          }
+     if(validReservation(ignoreAddress: true)){
+          var value = await calculatePrice();
+      if(value){
+  var param =  await apiService.configurations(['CommentReservation']);
+
+      createReservation.value.comment =param.firstOrNull?.nota?.replaceAll(r'{CityTo.Name}', createReservation.value.toCity?.name ?? '').replaceAll(r'${precioZipCode}.', formatMoney(zipcode.price)) ?? '';
+      totalAmount = (createReservation.value.price ?? 0.0).obs;
+      }
     createReservation.update((val) {
       val!.bagsCount = x.toInt();
     });
   }
+  }
 
+var totalAmount = 0.0.obs;
   void onChangedPassengerCount(num x) {
     createReservation.update((val) {
       val!.passengerCount = x.toInt();
@@ -286,11 +314,8 @@ class CreateBookingController extends GetxController with StateMixin {
     }
     if (activeStep.value == 0) {
       createReservation.value.fromAddressLine1 = addressLine1From;
-      createReservation.value.fromAddressLine2 = addressLine2From;
-      createReservation.value.fromZipCode = fromZipCode;
       createReservation.value.toAddressLine1 = toAddressLine1;
-      createReservation.value.toAddressLine2 = toAddressLine2;
-      createReservation.value.toZipCode = toZipCode;
+
       if (!validReservation()) {
         return;
       }
@@ -378,17 +403,20 @@ class CreateBookingController extends GetxController with StateMixin {
             createReservation.value.customerId);
       }
       if (message != null && message.isNotEmpty) {
-        await Get.dialog(AlertDialog(
-          title: const Text('Alert'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: const Text('OK'),
-            ),
-          ],
-        ));
-        EasyLoading.dismiss(animation: true);
+          EasyLoading.dismiss(animation: true);
+           await Get.dialog(AlertDialog(
+        title: const Text('Alert'),
+        content: const Text(
+            'Your reservation is pending payment. Please complete the payment in the vehicle.'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Close'),
+          ),
+        ],
+      ));
+      Get.offAllNamed(Routes.HOME);
+      
 
         return null;
       }
@@ -424,10 +452,11 @@ class CreateBookingController extends GetxController with StateMixin {
       EasyLoading.dismiss(animation: true);
       return result;
     } catch (e) {
+
       EasyLoading.dismiss(animation: true);
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
-        content: Text(e.toString()),
+        content: Text("Check your internet connection and try again."),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -442,19 +471,22 @@ class CreateBookingController extends GetxController with StateMixin {
   Future<bool> calculatePrice() async {
     try {
       EasyLoading.show(status: 'Loading...');
+     var zipcodeToModel = zipcodesTo.where((x)=>
+          x.idZipCode == createReservation.value.toZipCode ).firstOrNull;
+      var zipcodeFromModel = zipcodesFrom.where((x)=>
+          x.idZipCode == createReservation.value.fromZipCode ).firstOrNull;
       final priceOnlineRequest = PriceOnlineRequest(
         travel: createReservation.value.travel!.travelNumber,
-        townFrom: createReservation.value.fromTown!.idTown,
-        townTo: createReservation.value.toTown!.idTown,
         customer: createReservation.value.customerId,
         passengerNumber: createReservation.value.passengerCount!,
         stateFrom: createReservation.value.fromSate!.idState,
         cityFrom: createReservation.value.fromCity!.idCity,
-        zipCodeFrom: createReservation.value.fromZipCode!,
+        zipCodeFrom: zipcodeFromModel?.zipCodeT,
         stateTo: createReservation.value.toState!.idState,
         cityTo: createReservation.value.toCity!.idCity,
-        zipCodeTo: createReservation.value.toZipCode!,
+        zipCodeTo: zipcodeToModel?.zipCodeT,
         bag: createReservation.value.bagsCount!,
+        additional: additional.value,
         quantity:createReservation.value.quantity
       );
       var price = createReservation.value.serviceType == 0
@@ -480,9 +512,9 @@ class CreateBookingController extends GetxController with StateMixin {
             ? price.priceWithDiscount
             : price.priceWithoutDiscount;
         val.fromFullAddress =
-            '${val.fromAddressLine1}, ${val.fromAddressLine2} ${val.fromZipCode}';
+            '${val.fromAddressLine1},  ${val.fromZipCode}';
         val.toFullAddress =
-            '${val.toAddressLine1}. ${val.toAddressLine2}, ${val.toZipCode}';
+            '${val.toAddressLine1}. , ${val.toZipCode}';
       });
       EasyLoading.dismiss(animation: true);
       return true;
@@ -503,7 +535,7 @@ class CreateBookingController extends GetxController with StateMixin {
     }
   }
 
-  bool validReservation() {
+  bool validReservation({bool ignoreAddress = false}) {
     var createReservationValidator = createReservation.value.serviceType == 0
         ? CreateReservationValidator()
         : CreateServiceReservationValidator();
@@ -511,6 +543,27 @@ class CreateBookingController extends GetxController with StateMixin {
         createReservationValidator.validate(createReservation.value);
 
     if (validationResult.hasError) {
+      if(ignoreAddress){
+        var filteredErrors = validationResult.errors.where((error) =>
+            error.key != 'fromAddressLine1' &&
+            error.key != 'toAddressLine1');
+        if (filteredErrors.isEmpty) {
+          return true;
+        }
+        EasyLoading.dismiss();
+        Get.dialog(AlertDialog(
+          title: const Text('Alert'),
+          content:
+              Text(filteredErrors.map((x) => x.message).join('\n')),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text('Close'),
+            ),
+          ],
+        ));
+        return false;
+      }
       Get.dialog(AlertDialog(
         title: const Text('Alert'),
         content: Text(validationResult.errors.map((x) => x.message).join('\n')),
@@ -529,6 +582,8 @@ class CreateBookingController extends GetxController with StateMixin {
 
   var disableAddress = false.obs;
   var disableAddressTo = false.obs;
+
+  var additional = false.obs;
 
   onDescription(String? p1) {
     createReservation.value.description = p1 ?? '';
@@ -583,43 +638,40 @@ class CreateBookingController extends GetxController with StateMixin {
   }
 
   Future onFromCustomerAddress(CustomerAddress? x) async {
-    townsFrom.clear();
-    townsFrom = await getTowns(x!.city!.idCity);
+    if(x == null) {
+      return;
+
+    }
     createReservation.value.fromCity =
         citiesFrom.where((d) => d.idCity == x.city?.idCity).firstOrNull;
-    createReservation.value.fromTown = x.town;
     createReservation.value.idCustomerAddress = x.idCustomerAddress;
     addressLine1From = x.addressLine1 ?? '';
-    addressLine2From = x.addressLine2 ?? '';
-    fromZipCode = x.zipCode ?? '';
-
+     zipcodesFrom= await apiService.getZipCode(createReservation.value.fromCity!.idCity);
+     createReservation.value.fromZipCode =zipcodesFrom.where((t)=>"${t.idZipCode}" == x.zipCode).firstOrNull?.idZipCode;
     disableAddress.value = (x.idCustomerAddress ?? 0) > 0 ? true : false;
     update();
   }
 
   Future onToCustomerAddress(CustomerAddress? x) async {
-    townsTo.clear();
-    townsTo = await getTowns(x!.city!.idCity);
 
+    if(x == null) {
+      return;
 
+    }
     createReservation.value.toCity =
         citiesTo.where((x) => x.idCity == x.idCity).firstOrNull;
-    createReservation.value.toTown  = townsTo.where((d)=> d.idTown== x.town?.idTown).firstOrNull;
     createReservation.value.idCustomerAddressTo = x.idCustomerAddress;
     toAddressLine1 = x.addressLine1 ?? '';
-    toAddressLine2 = x.addressLine2 ?? '';
-    toZipCode = x.zipCode ?? '';
-
+     zipcodesTo = await apiService.getZipCode(createReservation.value.fromCity!.idCity);
+    
+     createReservation.value.toZipCode =zipcodesTo.where((t)=>"${t.idZipCode}" == x.zipCode).firstOrNull?.idZipCode;
     disableAddressTo.value = (x.idCustomerAddress ?? 0) > 0 ? true : false;
     update();
   }
 
   void cleanCustomerAddressFrom() {
     addressLine1From = '';
-    addressLine2From = '';
-    fromZipCode = '';
     createReservation.value.fromCity = null;
-    createReservation.value.fromTown = null;
     createReservation.value.fromAddressLine1 = null;
     createReservation.value.fromAddressLine2 = null;
     createReservation.value.fromZipCode = null;
@@ -631,15 +683,27 @@ class CreateBookingController extends GetxController with StateMixin {
 
   void cleanCustomerAddressTo() {
     toAddressLine1 = '';
-    toAddressLine2 = '';
-    toZipCode = '';
     createReservation.value.toCity = null;
-    createReservation.value.toTown = null;
     createReservation.value.toAddressLine1 = null;
     createReservation.value.toAddressLine2 = null;
     createReservation.value.toZipCode = null;
     createReservation.value.idCustomerAddressTo = null;
     disableAddressTo.value = false;
+    change(null, status: RxStatus.success());
+  }
+
+  Future onChangeAdditional(bool value) async {
+    additional = value.obs;
+    createReservation.value.additional = value;
+    var zipcode = zipcodesTo.where((t)=>
+          t.idZipCode == createReservation.value.toZipCode ).firstOrNull;
+          var valuePrice = await calculatePrice();
+      if(valuePrice){
+  var param =  await apiService.configurations(['CommentReservation']);
+
+      createReservation.value.comment =param.firstOrNull?.nota?.replaceAll(r'{CityTo.Name}', createReservation.value.toCity?.name ?? '').replaceAll(r'${precioZipCode}.', formatMoney(zipcode?.price??0)) ?? '';
+      totalAmount = (createReservation.value.price ?? 0.0).obs;
+      }
     change(null, status: RxStatus.success());
   }
 }

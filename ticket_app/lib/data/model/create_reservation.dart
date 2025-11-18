@@ -1,7 +1,6 @@
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/travel.dart';
 
 class CreateReservation {
@@ -9,15 +8,13 @@ class CreateReservation {
   StateModel? fromSate;
   String? fromAddressLine1;
   String? fromAddressLine2;
-  Town? fromTown;
   City? fromCity;
-  String? fromZipCode;
+  int? fromZipCode;
   StateModel? toState;
   String? toAddressLine1;
   String? toAddressLine2;
-  Town? toTown;
   City? toCity;
-  String? toZipCode;
+  int? toZipCode;
   int customerId;
 
   DateTime? date;
@@ -34,20 +31,20 @@ class CreateReservation {
   Travel? travel;
   String? photo;
   String? toFullAddress;
+  bool? additional;
+  String? comment;
   CreateReservation(
       {this.fromSate,
       this.toState,
       this.fromCity,
       this.toCity,
-      this.fromTown,
-      this.toTown,
       this.date,
       this.serviceType,
       required this.customerId,
       this.travel,
       this.description,
       this.quantity = 1,
-      this.id});
+      this.id,additional = false,});
 
   String? description;
 
@@ -63,21 +60,19 @@ class CreateReservation {
       'Customer': customerId,
       'PassengerNumber': passengerCount,
       'AddressLine1From': fromAddressLine1,
-      'AddressLine2From': fromAddressLine2,
       'StateFrom': fromSate?.idState,
       'CityFrom': fromCity?.idCity,
-      'TownFrom': fromTown?.idTown,
       'ZipCodeFrom': fromZipCode,
-      'AddressLine1To': toAddressLine1,
-      'AddressLine2To': toAddressLine2,
       'StateTo': toState?.idState,
       'CityTo': toCity?.idCity,
-      'TownTo': toTown?.idTown,
       'ZipCodeTo': toZipCode,
       'Description': '',
       'Bag': bagsCount,
       'Amount': price,
       'CreateDate': DateTime.now().toIso8601String(),
+      'Additional': (additional??false),
+      'AdditionalNo': !(additional??false),
+      'Comment': comment,
     };
   }
 
@@ -94,13 +89,11 @@ class CreateReservation {
       'AddressLine2From': fromAddressLine2,
       'StateFrom': fromSate?.idState,
       'CityFrom': fromCity?.idCity,
-      'TownFrom': fromTown?.idTown,
       'ZipCodeFrom': fromZipCode,
       'AddressLine1To': toAddressLine1,
       'AddressLine2To': toAddressLine2,
       'StateTo': toState?.idState,
       'CityTo': toCity?.idCity,
-      'TownTo': toTown?.idTown,
       'ZipCodeTo': toZipCode,
       'Description': description,
       'Amount': price,

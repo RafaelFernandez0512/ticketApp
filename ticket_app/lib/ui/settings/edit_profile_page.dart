@@ -7,7 +7,7 @@ import 'package:ticket_app/controller/edit_profile_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
+import 'package:ticket_app/data/model/zipcode.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/ui/widgets/custom_datepicker.dart';
 import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
@@ -220,34 +220,7 @@ class EditProfilePage extends GetView<EditProfileController> {
                                   },
                                 );
                               }),
-                          FutureBuilder(
-                              future: (controller.customerRx?.value?.city ??
-                                          0) >
-                                      0
-                                  ? controller.apiService.getTown(
-                                      controller.customerRx?.value?.city ?? 0)
-                                  : Future.value(List<Town>.empty()),
-                              builder: (context, data) {
-                                return CustomDropdown<Town, int>(
-                                  items: data.data?.toList() ?? [],
-                                  onChanged: controller.onChangeTown,
-                                  selectedItem: data.data
-                                      ?.where((x) =>
-                                          x.idTown ==
-                                          controller.customerRx?.value?.town)
-                                      .firstOrNull
-                                      ?.idTown,
-                                  labelText: 'Town (Neighborhood)',
-                                  showSearchBox: true,
-                                  textEditingController:
-                                      TextEditingController(),
-                                  valueProperty: "Id_Town",
-                                  labelProperty: "Name",
-                                  labelBuilder: (item) {
-                                    return '${item!["Name"]}';
-                                  },
-                                );
-                              }),
+
                           CustomTextField(
                               initialValue:
                                   controller.customerRx?.value?.addressLine1,
@@ -258,12 +231,36 @@ class EditProfilePage extends GetView<EditProfileController> {
                                   controller.customerRx?.value?.addressLine2,
                               labelText: 'Address Line 2',
                               onChanged: controller.onChangeAddressLine2),
-                          CustomTextField(
-                            labelText: 'Zip Code',
-                            onChanged: controller.onChangeZipCode,
-                            maxLength: 5,
-                            initialValue: controller.customerRx?.value?.zipCode,
-                          ),
+                              FutureBuilder(
+                              future: controller
+                                          .customerRx?.value?.state?.isEmpty ??
+                                      false
+                                  ? Future.value(List<ZipCode>.empty())
+                                  : controller.apiService.getZipCode(
+                                      controller.customerRx?.value?.zipCode ??
+                                          0),
+                              builder: (context, data) {
+                                return CustomDropdown<ZipCode, int>(
+                                  items: data.data?.toList() ?? [],
+                                  onChanged: controller.onChangeZipCode,
+                                  selectedItem: data.data
+                                      ?.where((x) =>
+                                          x.idZipCode ==
+                                          controller.customerRx?.value?.city)
+                                      .firstOrNull
+                                      ?.idZipCode,
+                                  labelText: 'Zip Code',
+                                  showSearchBox: true,
+                                  textEditingController:
+                                      TextEditingController(),
+                                  valueProperty: "idZipCode",
+                                  labelProperty: "zipCodeT",
+                                  labelBuilder: (item) {
+                                    return '${item!["zipCodeT"]}';
+                                  },
+                                );
+                              }),
+                        
                           Row(
                             children: [
                               Expanded(

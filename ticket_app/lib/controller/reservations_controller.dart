@@ -80,7 +80,7 @@ class TravelsController extends GetxController with StateMixin {
     EasyLoading.show(status: 'Loading...');
     var id = Get.find<SessionService>().getSession()?.customerId;
     String? message = '';
-    if (serviceType.value == 0) {
+    if (serviceType.value == 0 && id != null) {
       message = await apiService.validReservation(travel.travelNumber, id!);
     } else {
       message = await apiService.validService(travel.travelNumber, id!);
@@ -130,8 +130,6 @@ class TravelsController extends GetxController with StateMixin {
         toState: travel.stateTo,
         fromCity: travel.cityFrom,
         toCity: travel.cityTo,
-        fromTown: travel.townFrom,
-        toTown: travel.townTo,
         date: travel.departureDate,
         travel: travel,
         customerId: id);

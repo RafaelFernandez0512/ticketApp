@@ -22,7 +22,9 @@ class AuthService extends GetxService {
             const Duration(seconds: 120)); // Aplicar timeout de 10 segundo;
 
     if (response.statusCode == 200) {
+      var sesion = sessionService.getSession();
       sessionService.saveSession(Session(
+        customerId: sesion?.customerId,
           username: username,
           password: password,
           token: response.body,

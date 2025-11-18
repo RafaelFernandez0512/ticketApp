@@ -3,7 +3,7 @@ import 'package:sizer/sizer.dart';
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/customer_address.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
+import 'package:ticket_app/data/model/zipcode.dart';
 import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
 import 'package:ticket_app/ui/widgets/custom_text_field.dart';
 
@@ -11,21 +11,19 @@ class BasicFormBookingView extends StatelessWidget {
   final String? addressLine1;
   final String? addressLine2;
   final String? idState;
-  final int? idtown;
   final String title;
   final int? idCustomerAddress;
   final List<StateModel> states;
-  final List<Town> towns;
   final List<City> cities;
+  final List<ZipCode> zipCodes;
   final List<CustomerAddress> customerAddress;
-  final String? zipCode;
+  final int? zipCode;
   final int? city;
   final bool? activeState;
   final Function(String) onChangedAddressLine1;
   final Function(String) onChangedAddressLine2;
   final Function(StateModel?) onChangedState;
-  final Function(Town?) onChangedTown;
-  final Function(String) onChangedZipCode;
+  final Function(ZipCode?) onChangedZipCode;
   final Function(CustomerAddress?) onChangedCustomerAddress;
   final bool disableAddress;
   final VoidCallback? cleanCustomerAddress;
@@ -38,13 +36,10 @@ class BasicFormBookingView extends StatelessWidget {
       required this.addressLine1,
       required this.addressLine2,
       required this.idState,
-      required this.idtown,
       required this.states,
-      required this.towns,
       required this.onChangedAddressLine1,
       required this.onChangedAddressLine2,
       required this.onChangedState,
-      required this.onChangedTown,
       required this.onChangedZipCode,
       required this.zipCode,
       required this.city,
@@ -55,6 +50,7 @@ class BasicFormBookingView extends StatelessWidget {
       required this.onChangedCustomerAddress,
       this.activeState = true,
       this.disableAddress = false,
+      this.zipCodes = const [],
       this.cleanCustomerAddress});
 
   @override
@@ -102,7 +98,7 @@ class BasicFormBookingView extends StatelessWidget {
                             .where((y) => y.idCustomerAddress == x)
                             .firstOrNull);
                       },
-                      labelText: 'Previous Addresses',
+                      labelText: 'Your Previous Addresses',
                       selectedItem: customerAddress
                           .where(
                               (x) => x.idCustomerAddress == idCustomerAddress)
@@ -128,13 +124,19 @@ class BasicFormBookingView extends StatelessWidget {
                   ),
                 ],
               ),
+                            CustomTextField(
+                  controller: TextEditingController(text: addressLine1),
+                  keyboard: TextInputType.streetAddress,
+                  labelText: 'Current Address ',
+                  maxLength: 250,
+                  onChanged: onChangedAddressLine1),
               CustomDropdown<City, int?>(
                 items: cities,
                 onChanged: (x) async {
                   await onChangedCity(
                       cities.where((y) => y.idCity == x).firstOrNull);
                 },
-                labelText: 'County (City)',
+                labelText: 'City',
                 enabled: !disableAddress,
                 selectedItem:
                     cities.where((x) => x.idCity == city).firstOrNull?.idCity,
@@ -146,42 +148,25 @@ class BasicFormBookingView extends StatelessWidget {
                   return '${item!["Name"]}';
                 },
               ),
-              CustomDropdown<Town, int?>(
-                items: towns,
-                onChanged: (x) {
-                  onChangedTown(towns.where((y) => y.idTown == x).firstOrNull);
+               CustomDropdown<ZipCode, int?>(
+                items: zipCodes,
+                onChanged: (x) async {
+                  await onChangedZipCode(
+                      zipCodes.where((y) => y.idZipCode == x).firstOrNull);
                 },
-                selectedItem: towns.isNotEmpty
-                    ? towns.where((x) => x.idTown == idtown).firstOrNull?.idTown
-                    : null,
-                labelText: 'Town (Neighborhood)',
+                labelText: 'Zip Code',
+                selectedItem:
+                    zipCodes.where((x) => x.idZipCode == zipCode).firstOrNull?.idZipCode,
                 showSearchBox: true,
                 textEditingController: TextEditingController(),
-                valueProperty: "Id_Town",
-                labelProperty: "Name",
+                valueProperty: "Id_ZipCode",
+                labelProperty: "ZipCodeT",
                 labelBuilder: (item) {
-                  return '${item!["Name"]}';
+                  return '${item!["ZipCodeT"]} Price: ${item["Price"]}';
                 },
               ),
-              CustomTextField(
-                  controller: TextEditingController(text: addressLine1),
-                  keyboard: TextInputType.streetAddress,
-                  labelText: 'Address Line 1',
-                  maxLength: 250,
-                  onChanged: onChangedAddressLine1),
-              CustomTextField(
-                  keyboard: TextInputType.streetAddress,
-                  labelText: 'Address Line 2',
-                       maxLength: 250,
-                  controller: TextEditingController(text: addressLine2),
-                  onChanged: onChangedAddressLine2),
-              CustomTextField(
-                labelText: 'Zip Code',
-                
-                maxLength: 5,
-                controller: TextEditingController(text: zipCode),
-                onChanged: onChangedZipCode,
-              ),
+
+  
             ],
           ),
         ),

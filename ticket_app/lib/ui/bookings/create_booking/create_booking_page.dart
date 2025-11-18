@@ -69,7 +69,7 @@ class CreateBookingPage extends GetView<CreateBookingController> {
             ReservationForm(
               controller: controller,
             ),
-            gapH30,
+            gapH30,   
             CustomButton(
                 type: NotificationType.success,
                 label: 'Checkout',

@@ -20,7 +20,6 @@ import 'package:ticket_app/data/model/price_online_request.dart';
 import 'package:ticket_app/data/model/reservation.dart';
 import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
 import 'package:ticket_app/data/model/travel.dart';
 import 'package:ticket_app/data/model/zipcode.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
@@ -34,18 +33,28 @@ class ApiService extends GetxService {
   final AuthService authService = Get.find<AuthService>();
   ApiService(this._baseUrl);
 
-  Future<String> getToken() async {
-    var session = sessionService.getSession();
-    if (session == null ||
-        (session.isSessionTemporalExpired() && session.isSessionExpired())) {
-      if (session?.expirationDate != null) {
-        return await authService.authenticate(
-            session?.username ?? '', session?.password ?? '');
-      }
-      return await authService.temporalToken();
+Future<String> getToken() async {
+  var session = sessionService.getSession();
+
+  // Si no hay sesión o alguna expiró
+  if (session == null ||
+      session.isSessionExpired()) {
+
+    // Si hay credenciales guardadas, autentica
+    if (session?.username != null && session?.password != null) {
+      return await authService.authenticate(
+        session!.username!,
+        session.password!,
+      );
     }
-    return session.token ?? session.refreshToken ?? '';
+
+    // Si no hay credenciales, genera un token temporal
+    return await authService.temporalToken();
   }
+
+  // Devuelve el token existente o el de refresco
+  return session.token ?? session.refreshToken ?? '';
+}
 
   Future<List<Day>> getDays() async {
     final response = await http.get(
@@ -108,37 +117,7 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<List<Town>> getTowns() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/api/odata/Town'),
-      headers: {'Authorization': 'Bearer ${await getToken()}'},
-    );
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      return ODataResponse<Town>.fromJson(
-          jsonResponse, (json) => Town.fromJson(json)).value;
-    } else {
-      throw Exception('Error al obtener town: ${response.statusCode}');
-    }
-  }
-
-  Future<List<Town>> getTown(int idCity) async {
-    //NombreCiudad
-    var queryParams = "?\$filter=City/Id_City eq $idCity";
-    final response = await http.get(
-      Uri.parse('$_baseUrl/api/odata/Town$queryParams'),
-      headers: {'Authorization': 'Bearer ${await getToken()}'},
-    );
-
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      return ODataResponse<Town>.fromJson(
-          jsonResponse, (json) => Town.fromJson(json)).value;
-    } else {
-      throw Exception('Error al obtener town: ${response.statusCode}');
-    }
-  }
 
   Future<List<City>> getCity(String idState) async {
     var queryParams = "?\$filter=State/Id_state eq '$idState'";
@@ -340,7 +319,7 @@ class ApiService extends GetxService {
 
   Future<Customer?> getCustomer(String username) async {
     var queryParams =
-        "\$filter=email eq '$username'&\$expand=Town,City,State,Gender,CustomerType,Country";
+        "\$filter=email eq '$username'&\$expand=City,State,Gender,CustomerType,Country";
     final response = await http.get(
       Uri.parse('$_baseUrl/api/odata/Customer?$queryParams'),
       headers: {
@@ -440,9 +419,10 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<List<ZipCode>> getZipCode(String zipCode) async {
+  Future<List<ZipCode>> getZipCode(int id_City) async {
+    var queryParams = "?\$filter=City/Id_City eq $id_City";
     final response = await http.get(
-      Uri.parse('$_baseUrl/api/odata/ZipCode'),
+      Uri.parse('$_baseUrl/api/odata/ZipCode$queryParams'),
       headers: {'Authorization': 'Bearer ${await getToken()}'},
     );
 
@@ -454,7 +434,21 @@ class ApiService extends GetxService {
       return <ZipCode>[];
     }
   }
+  Future<List<ZipCode>> getZipCodeById(int id_ZipCode) async {
+    var queryParams = "?\$filter=Id_ZipCode eq $id_ZipCode";
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/odata/ZipCode$queryParams'),
+      headers: {'Authorization': 'Bearer ${await getToken()}'},
+    );
 
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ODataResponse<ZipCode>.fromJson(
+          jsonResponse, (json) => ZipCode.fromJson(json)).value;
+    } else {
+      return <ZipCode>[];
+    }
+  }
   Future<ApplicationUser?> getApplicationUser(String email) async {
     final response = await http.get(
       Uri.parse(
@@ -478,7 +472,7 @@ class ApiService extends GetxService {
 
     ///api/odata/CustomerAddress?$expand=State,Town,City&$filter=State/Id_State eq 'OH'
     var queryParams =
-        "\$expand=State,Town,City&\$filter=Customer/Id_Customer eq $id and State/Id_State eq '$stateId'";
+        "\$expand=State,City&\$filter=Customer/Id_Customer eq $id and State/Id_State eq '$stateId'";
     final response = await http.get(
       Uri.parse('$_baseUrl/api/odata/CustomerAddress?$queryParams'),
       headers: {'Authorization': 'Bearer ${await getToken()}'},
@@ -501,13 +495,14 @@ class ApiService extends GetxService {
       'PassengerNumber': value.passengerNumber.toString(),
       'StateFrom': value.stateFrom,
       'CityFrom': value.cityFrom.toString(),
-      'TownFrom': value.townFrom.toString(),
+      'TownFrom':'0',
       'ZipCodeFrom': value.zipCodeFrom,
       'StateTo': value.stateTo,
       'CityTo': value.cityTo.toString(),
-      'TownTo': value.townTo.toString(),
+      'TownTo': '0',
       'ZipCodeTo': value.zipCodeTo,
       'Bag': value.bag.toString(),
+      'Additional': (value.additional??false).toString(),
     };
 
     // Construye la URL con los parámetros
@@ -549,11 +544,9 @@ class ApiService extends GetxService {
       'Item': value.passengerNumber.toString(),
       'StateFrom': value.stateFrom,
       'CityFrom': value.cityFrom.toString(),
-      'TownFrom': value.townFrom.toString(),
       'ZipCodeFrom': value.zipCodeFrom,
       'StateTo': value.stateTo,
       'CityTo': value.cityTo.toString(),
-      'TownTo': value.townTo.toString(),
       'ZipCodeTo': value.zipCodeTo,
       'Quantity': value.quantity.toString(),
     };
@@ -633,7 +626,7 @@ class ApiService extends GetxService {
       body: jsonEncode(value.toJson()),
     );
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
+    if (response. statusCode == 201 || response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       return Reservation.fromJson(jsonResponse);
     } else {
@@ -706,7 +699,7 @@ class ApiService extends GetxService {
     final toDateStr = toDate.toIso8601String();
 
     var parameters =
-        '?\$expand=StateFrom,StateTo,CityFrom,CityTo,TownTo,TownFrom,Payments,Travel(\$expand=Employee(\$select=FullName),Vehicle(\$select=Name)),ReservationStatus,Customer'
+        '?\$expand=StateFrom,StateTo,CityFrom,CityTo,Payments,Travel(\$expand=Employee(\$select=FullName),Vehicle(\$select=Name)),ReservationStatus,Customer'
         '&\$filter=Customer/Id_Customer eq $id'
         ' and Travel/DepartureDate ge $fromDateStr'
         ' and Travel/DepartureDate le $toDateStr';

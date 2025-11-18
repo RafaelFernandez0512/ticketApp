@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -130,31 +131,62 @@ class _QrStatePage extends State<QRPage> {
     setState(() {
       this.controller = controller;
     });
-    controller.scannedDataStream.listen((scanData) async {
-      controller.stopCamera();
-      var message = await widget.apiService
-          .verifyStatusReservation(int.tryParse(scanData.code ?? '') ?? -1);
-      await Get.dialog(
-        AlertDialog(
-          title: const Text('Alert'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      _scanSub = controller.scannedDataStream.listen(_onScan); 
+  }
+    @override
+  void dispose() {
+    _scanSub?.cancel();
+    controller?.dispose();
+    super.dispose();
+  }
+    StreamSubscription<Barcode>? _scanSub;
+  Future<void> _onScan(Barcode scanData) async {
+    if (_handling) return; // evita reentradas
+    _handling = true;
+
+    try {
+      // Detén/pausa la cámara y espera a que termine
+      await controller?.stopCamera(); // o: await controller?.pauseCamera();
+
+      final id = int.tryParse(scanData.code ?? '') ?? -1;
+      final message =
+          await widget.apiService.verifyStatusReservation(id);
+
+      if (!mounted) return;
+
+      // Evita abrir múltiples diálogos
+      if (Get.isDialogOpen != true) {
+        await Get.dialog(
+          AlertDialog(
+            title: const Text('Alert'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+          barrierDismissible: false,
+        );
+      }
+
+      if (!mounted) return;
+
       setState(() {
         result = scanData;
       });
-      Future.delayed(const Duration(microseconds: 500), () {
-        controller.resumeCamera();
-      });
-    });
+    } catch (e) {
+      // Manejo opcional de errores
+      // print(e);
+    } finally {
+      // Pequeño respiro para que la cámara vuelva estable
+      await Future.delayed(const Duration(milliseconds: 300));
+      await controller?.resumeCamera();
+      _handling = false;
+    }
   }
-
+    bool _handling = false;
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(

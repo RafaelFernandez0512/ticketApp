@@ -1,10 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/reservation.dart';
-import 'package:ticket_app/ui/bookings/payments/payment_sheet_modal.dart';
-import 'package:ticket_app/ui/bookings/payments/payment_web.dart';
 import 'package:ticket_app/ui/widgets/LayoutBuilderWidget.dart';
 import 'package:ticket_app/ui/widgets/base_64_image_with_fallback.dart';
 import 'package:ticket_app/ui/widgets/circle_shape.dart';
@@ -73,14 +70,6 @@ class MyTicketReservationView extends StatelessWidget {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: CustomTheme.primaryLightColor)),
-                      Text(ticket.townFrom?.name ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                  fontSize: 12,
-                                  color: CustomTheme.primaryLightColor)),
                     ],
                   ),
                 ),
@@ -128,14 +117,6 @@ class MyTicketReservationView extends StatelessWidget {
                               ?.copyWith(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: CustomTheme.primaryLightColor)),
-                      Text(ticket.townTo?.name ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                  fontSize: 12,
                                   color: CustomTheme.primaryLightColor)),
                     ],
                   ),
@@ -347,7 +328,7 @@ class MyTicketReservationView extends StatelessWidget {
                           gapW8,
                           Flexible(
                             child: Text(
-                                '${ticket.addressLine1From},${ticket.addressLine2From}',
+                                '${ticket.addressLine1From}',
                                 style: Theme.of(context).textTheme.titleMedium),
                           ),
                         ],
@@ -365,7 +346,7 @@ class MyTicketReservationView extends StatelessWidget {
                           gapW8,
                           Flexible(
                             child: Text(
-                                '${ticket.addressLine1To},${ticket.addressLine2To}',
+                                '${ticket.addressLine1To}',
                                 style: Theme.of(context).textTheme.titleMedium),
                           ),
                         ],

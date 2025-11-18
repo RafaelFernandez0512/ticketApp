@@ -13,7 +13,7 @@ class PriceOnlineRequest {
   final int? bag;
   final int? item;
   final int? quantity;
-
+ final  bool ?additional;
   PriceOnlineRequest(
       {this.travel,
       this.customer,
@@ -28,7 +28,7 @@ class PriceOnlineRequest {
       this.zipCodeTo,
       this.bag,
       this.item,
-      this.quantity});
+      this.quantity, this.additional});
 
   // Método para convertir un JSON a un objeto PriceOnlineRequest
   factory PriceOnlineRequest.fromJson(Map<String, dynamic> json) {
@@ -38,13 +38,12 @@ class PriceOnlineRequest {
       passengerNumber: json['PassengerNumber'] as int,
       stateFrom: json['StateFrom'] as String,
       cityFrom: json['CityFrom'] as int,
-      townFrom: json['TownFrom'] as int,
       zipCodeFrom: json['ZipCodeFrom'] as String,
       stateTo: json['StateTo'] as String,
       cityTo: json['CityTo'] as int,
-      townTo: json['TownTo'] as int,
       zipCodeTo: json['ZipCodeTo'] as String,
       bag: json['Bag'] as int,
+      additional: json['Additional'] as bool,
     );
   }
 
@@ -56,11 +55,9 @@ class PriceOnlineRequest {
       'PassengerNumber': passengerNumber,
       'StateFrom': stateFrom,
       'CityFrom': cityFrom,
-      'TownFrom': townFrom,
       'ZipCodeFrom': zipCodeFrom,
       'StateTo': stateTo,
       'CityTo': cityTo,
-      'TownTo': townTo,
       'ZipCodeTo': zipCodeTo,
       'Bag': bag,
       'Quantity': quantity

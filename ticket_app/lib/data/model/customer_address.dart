@@ -1,6 +1,5 @@
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
 
 class CustomerAddress {
   int? idCustomerAddress;
@@ -10,7 +9,6 @@ class CustomerAddress {
   String? zipCode;
   int? reservationNumber;
   StateModel? state;
-  Town? town;
   City? city;
 
   CustomerAddress({
@@ -21,7 +19,6 @@ class CustomerAddress {
     this.zipCode,
     this.reservationNumber,
     this.state,
-    this.town,
     this.city,
   });
 
@@ -35,7 +32,6 @@ class CustomerAddress {
       zipCode: json['ZipCode'] as String?,
       reservationNumber: json['ReservationNumber'] as int?,
       state: json['State'] != null ? StateModel.fromJson(json['State']) : null,
-      town: json['Town'] != null ? Town.fromJson(json['Town']) : null,
       city: json['City'] != null ? City.fromJson(json['City']) : null,
     );
   }
@@ -50,7 +46,6 @@ class CustomerAddress {
       'ZipCode': zipCode,
       'ReservationNumber': reservationNumber,
       'State': state?.toJson(),
-      'Town': town?.toJson(),
       'City': city?.toJson(),
     };
   }

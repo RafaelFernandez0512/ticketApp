@@ -1,13 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ticket_app/controller/sign_up_controller.dart';
 import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
+import 'package:ticket_app/data/model/zipcode.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/ui/widgets/custom_datepicker.dart';
 import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
@@ -177,14 +175,12 @@ class RegisterAddressForm extends StatelessWidget {
   Function(String)? onChangedAddressLine1;
   Function(String)? onChangedAddressLine2;
   ValueChanged<String?>? onChangedState;
-  ValueChanged<int?>? onChangedTown;
   ValueChanged<int?>? onChangedCity;
-  Function(String)? onChangedZipCode;
+  Function(int?)? onChangedZipCode;
   String addressLine1 = '';
   String addressLine2 = '';
   String state = '';
   int city;
-  int town;
   String zipCode = '';
 
   RegisterAddressForm(
@@ -193,13 +189,11 @@ class RegisterAddressForm extends StatelessWidget {
       this.onChangedAddressLine2,
       this.onChangedState,
       this.onChangedCity,
-      this.onChangedTown,
       this.onChangedZipCode,
       this.addressLine1 = '',
       this.addressLine2 = '',
       this.state = '',
-      this.city = 0,
-      this.town = 0});
+      this.city = 0,});
   var apiService = Get.find<ApiService>();
   @override
   Widget build(
@@ -251,28 +245,6 @@ class RegisterAddressForm extends StatelessWidget {
                   },
                 );
               }),
-          FutureBuilder(
-              future: city > 0
-                  ? apiService.getTown(city)
-                  : Future.value(List<Town>.empty()),
-              builder: (context, data) {
-                return CustomDropdown<Town, int>(
-                  items: data.data?.toList() ?? [],
-                  onChanged: onChangedTown,
-                  selectedItem: data.data
-                      ?.where((x) => x.idTown == town)
-                      .firstOrNull
-                      ?.idTown,
-                  labelText: 'Town (Neighborhood)',
-                  showSearchBox: true,
-                  textEditingController: TextEditingController(),
-                  valueProperty: "Id_Town",
-                  labelProperty: "Name",
-                  labelBuilder: (item) {
-                    return '${item!["Name"]}';
-                  },
-                );
-              }),
           CustomTextField(
               initialValue: addressLine1,
               keyboard: TextInputType.streetAddress,
@@ -285,12 +257,29 @@ class RegisterAddressForm extends StatelessWidget {
               labelText: 'Address Line 2',
               maxLength: 250,
               onChanged: onChangedAddressLine2),
-          CustomTextField(
-            labelText: 'Zip Code',
-            onChanged: onChangedZipCode,
-            maxLength: 5,
-            initialValue: zipCode,
-          ),
+
+                    FutureBuilder(
+              future: city == 0
+                  ? Future.value(List<ZipCode>.empty())
+                  : apiService.getZipCode(city),
+              builder: (context, data) {
+                return CustomDropdown<ZipCode, int>(
+                  items: data.data?.toList() ?? [],
+                  onChanged: onChangedZipCode,
+                  selectedItem: data.data
+                      ?.where((x) => x.idZipCode == city)
+                      .firstOrNull
+                      ?.idZipCode,
+                  labelText: 'Zip Code',
+                  showSearchBox: true,
+                  textEditingController: TextEditingController(),
+                  valueProperty: "Id_ZipCode",
+                  labelProperty: "ZipCodeT",
+                  labelBuilder: (item) {
+                    return '${item!["ZipCodeT"]}';
+                  },
+                );
+              }),
         ],
       ),
     );

@@ -10,7 +10,6 @@ import 'package:ticket_app/ui/Authentication/components/verification_code.dart';
 import 'package:ticket_app/ui/widgets/custom_button.dart';
 import 'package:ticket_app/ui/Authentication/components/sign_up_form.dart';
 import 'package:ticket_app/utils/gaps.dart';
-import 'package:ticket_app/utils/notification_type.dart';
 
 class SignUpPage extends GetView<SignUpController> {
   const SignUpPage({super.key});
@@ -148,12 +147,10 @@ class SignUpPage extends GetView<SignUpController> {
               onChangedAddressLine1: controller.onChangeAddressLine1,
               onChangedAddressLine2: controller.onChangeAddressLine2,
               onChangedState: controller.onChangeState,
-              onChangedTown: controller.onChangeTown,
               onChangedCity: controller.onChangeCity,
               onChangedZipCode: controller.onChangeZipCode,
               state: controller.userRegister.value.state ?? '',
               city: controller.userRegister.value.city ?? 0,
-              town: controller.userRegister.value.town ?? 0,
               addressLine1: controller.userRegister.value.addressLine1 ?? '',
               addressLine2: controller.userRegister.value.addressLine2 ?? '',
             ),

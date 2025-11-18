@@ -52,14 +52,7 @@ class ConfirmationTicketView extends StatelessWidget {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: CustomTheme.primaryLightColor)),
-                      Text(ticket.fromTown?.name ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                  fontSize: 12,
-                                  color: CustomTheme.primaryLightColor)),
+
                     ],
                   ),
                 ),
@@ -108,14 +101,7 @@ class ConfirmationTicketView extends StatelessWidget {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: CustomTheme.primaryLightColor)),
-                      Text(ticket.toTown?.name ?? '',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                  fontSize: 12,
-                                  color: CustomTheme.primaryLightColor)),
+
                     ],
                   ),
                 ),

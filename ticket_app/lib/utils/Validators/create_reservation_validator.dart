@@ -17,10 +17,6 @@ class CreateReservationValidator extends AbstractValidator<CreateReservation> {
         .must((value) => value != null, 'Departure County (City) is required.');
     ruleFor((user) => user.toCity, key: 'toCity')
         .must((value) => value != null, 'Destination County (City) is required.');
-    ruleFor((user) => user.fromTown, key: 'fromTown')
-        .must((value) => value != null, 'Departure Town (Neighborhood) is required.');
-    ruleFor((user) => user.toTown, key: 'toTown')
-        .must((value) => value != null, 'Destination Town (Neighborhood) is required.');
     ruleFor((user) => user.date, key: 'date')
         .must((value) => value != null, 'Travel date is required.');
     ruleFor((user) => user.hour, key: 'hour')
@@ -28,10 +24,10 @@ class CreateReservationValidator extends AbstractValidator<CreateReservation> {
     ruleFor((user) => user.passengerCount, key: 'passengerCount')
         .must((value) => value != null, 'Number of passengers is required.');
     ruleFor((user) => user.fromZipCode, key: 'fromZipCode').must(
-        (value) => value != null && value.isNotEmpty,
+        (value) => value != null && value > 0,
         'Departure zip code is required.');
     ruleFor((user) => user.toZipCode, key: 'toZipCode').must(
-        (value) => value != null && value.isNotEmpty,
+        (value) => value != null && value > 0,
         'Destination zip code is required.');
   }
 }
@@ -54,10 +50,7 @@ class CreateServiceReservationValidator
         .must((value) => value != null, 'Departure County (City) is required.');
     ruleFor((user) => user.toCity, key: 'toCity')
         .must((value) => value != null, 'Destination County (City) is required.');
-    ruleFor((user) => user.fromTown, key: 'fromTown')
-        .must((value) => value != null, 'Departure Town (Neighborhood) is required.');
-    ruleFor((user) => user.toTown, key: 'toTown')
-        .must((value) => value != null, 'Destination Town (Neighborhood) is required.');
+
     ruleFor((user) => user.date, key: 'date')
         .must((value) => value != null, 'Travel date is required.');
     ruleFor((user) => user.hour, key: 'hour')
@@ -65,10 +58,10 @@ class CreateServiceReservationValidator
     ruleFor((user) => user.items, key: 'items')
         .must((value) => value != null, 'Number of items is required.');
     ruleFor((user) => user.fromZipCode, key: 'fromZipCode').must(
-        (value) => value != null && value.isNotEmpty,
+        (value) => value != null && value > 0,
         'Departure zip code is required.');
     ruleFor((user) => user.toZipCode, key: 'toZipCode').must(
-        (value) => value != null && value.isNotEmpty,
+        (value) => value != null && value > 0,
         'Destination zip code is required.');
     ruleFor((user) => user.photo, key: 'photo')
         .must((value) => value != null, 'Image is required.');

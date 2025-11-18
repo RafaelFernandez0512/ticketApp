@@ -209,7 +209,22 @@ class ForgotPasswordController extends GetxController
   Future<void> sendCode() async {
     try {
       EasyLoading.show(status: 'loading...');
-
+      var customer = await apiService.getCustomer(forgotPasswordModel.value.email!);
+      if (customer == null) {
+        EasyLoading.dismiss();
+        Get.dialog(AlertDialog(
+          title: const Text('Alert'),
+          content: const Text('Email address not found'),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text('Close'),
+            ),
+          ],
+        ));
+        backStep();
+        return;
+      }
       var response =
           await apiService.sendCode(forgotPasswordModel.value.email!);
       EasyLoading.dismiss();

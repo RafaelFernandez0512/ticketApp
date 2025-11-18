@@ -9,6 +9,7 @@ import 'package:ticket_app/custom_theme.dart';
 import 'package:ticket_app/data/model/Item_type.dart';
 import 'package:ticket_app/data/model/schedule.dart';
 import 'package:ticket_app/ui/bookings/create_booking/components/basic_form_booking_view.dart';
+import 'package:ticket_app/ui/widgets/custom_checkbox.dart';
 import 'package:ticket_app/ui/widgets/custom_datepicker.dart';
 import 'package:ticket_app/ui/widgets/custom_dropdown.dart';
 import 'package:ticket_app/ui/widgets/custom_text_field.dart';
@@ -161,12 +162,11 @@ class ReservationForm extends StatelessWidget {
             title: 'From',
             activeState: controller.active.value,
             addressLine1: controller.addressLine1From,
-            addressLine2: controller.addressLine2From,
+            addressLine2: '',
             idState: controller.createReservation.value.fromSate?.idState,
-            idtown: controller.createReservation.value.fromTown?.idTown,
-            zipCode: controller.fromZipCode,
+            zipCode: controller.createReservation.value.fromZipCode,
             states: controller.states,
-            towns: controller.townsFrom,
+            zipCodes:controller.zipcodesFrom ,
             onChangedAddressLine1: (x) {
               controller.onFromChangedAddressLine1(x);
             },
@@ -175,9 +175,6 @@ class ReservationForm extends StatelessWidget {
             },
             onChangedState: (x) async {
               await controller.onChangeFromState(x);
-            },
-            onChangedTown: (x) {
-              controller.onFromTown(x);
             },
             onChangedZipCode: (x) {
               controller.onFromZipCode(x);
@@ -193,20 +190,19 @@ class ReservationForm extends StatelessWidget {
             onChangedCustomerAddress: (x) {
               controller.onFromCustomerAddress(x);
             },
-            disableAddress: controller.disableAddress.value,
+            disableAddress: controller.disableAddress.value ,
             cleanCustomerAddress: () => controller.cleanCustomerAddressFrom(),
           ),
           gapH20,
           BasicFormBookingView(
             title: 'To',
+             zipCodes:controller.zipcodesTo ,
             addressLine1: controller.toAddressLine1,
-            addressLine2: controller.toAddressLine2,
+            addressLine2: '',
             idState: controller.createReservation.value.toState?.idState,
-            idtown: controller.createReservation.value.toTown?.idTown,
-            zipCode: controller.toZipCode,
+            zipCode: controller.createReservation.value.toZipCode,
             states: controller.states,
             activeState: controller.active.value,
-            towns: controller.townsTo,
             onChangedAddressLine1: (x) {
               controller.onToChangedAddressLine1(x);
             },
@@ -215,9 +211,6 @@ class ReservationForm extends StatelessWidget {
             },
             onChangedState: (x) async {
               await controller.onChangeToState(x);
-            },
-            onChangedTown: (x) {
-              controller.onToTown(x);
             },
             onChangedZipCode: (x) {
               controller.onToZipCode(x);
@@ -233,8 +226,21 @@ class ReservationForm extends StatelessWidget {
             onChangedCustomerAddress: (x) {
               controller.onToCustomerAddress(x);
             },
-            disableAddress: controller.disableAddressTo.value,
+            disableAddress: controller.disableAddressTo.value|| (!controller.disableAddressTo.value && !controller.fromValueComplete()),
             cleanCustomerAddress: () => controller.cleanCustomerAddressTo(),
+          ),
+          gapH12,
+          Visibility(
+            visible: controller.createReservation.value.comment?.isNotEmpty?? false,
+            child: CustomCheckbox(
+              label: controller.createReservation.value.comment,
+              value: controller.additional.value,
+              textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent, fontWeight: FontWeight.w600),
+              labelToLeft: true,
+              onChanged:  (x) {
+                      controller.onChangeAdditional(x ?? false);
+                    },
+            ),
           ),
           gapH12,
           Visibility(
@@ -251,6 +257,29 @@ class ReservationForm extends StatelessWidget {
               },
             ),
           ),
+               gapH16,
+           Row(
+             children: [
+               Text(
+                'Amount:',
+                textAlign: TextAlign.start,
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      fontWeight: FontWeight.w600,
+                      
+                    ),),
+                    Spacer(),
+                       Padding(
+                         padding:  EdgeInsets.symmetric(horizontal:  10.0.sp),
+                         child: Text(
+                                          controller.formatMoney(controller.totalAmount.value),
+                                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                               fontWeight: FontWeight.w600,
+                                               color: Colors.redAccent
+                                               
+                                             ),),
+                       ),
+             ],
+           ),
         ],
       ),
     ));

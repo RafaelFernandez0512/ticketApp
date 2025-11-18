@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
@@ -8,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
-import 'package:flutter_stripe_web/flutter_stripe_web.dart';
 import '../routes/app_pages.dart';
 
 class SplashController extends GetxController with StateMixin {
@@ -24,9 +21,10 @@ class SplashController extends GetxController with StateMixin {
     super.onReady();
     Future.delayed(const Duration(seconds: 2), () async {
       try {
+        await loadData();
         var user = Get.find<SessionService>().getSession();
       
-        if (((user?.customerId ?? 0)) > 0 && user != null) {
+        if (user!=null && !user.isSessionExpired()) {
           var auth = await Get.find<AuthService>()
               .authenticate(user.username ?? "", user.password ?? "");
              

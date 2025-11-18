@@ -1,6 +1,5 @@
 import 'package:ticket_app/data/model/city.dart';
 import 'package:ticket_app/data/model/state.dart';
-import 'package:ticket_app/data/model/town.dart';
 
 class CreateUserRequest {
   final String? firstName;
@@ -16,7 +15,7 @@ class CreateUserRequest {
   final String? mobile;
   final String? addressLine1;
   final String? addressLine2;
-  final String? zipCode;
+  final int? zipCode;
   final String? photo;
   final bool? status;
   final String? emergencyContact;
@@ -25,7 +24,6 @@ class CreateUserRequest {
   final String? gender;
   final String? state;
   final String? city;
-  final int? town;
   final int? country;
   final int? customerType = 1002;
 
@@ -51,7 +49,6 @@ class CreateUserRequest {
     this.gender,
     this.state,
     this.city,
-    this.town,
     this.country,
   });
 
@@ -102,7 +99,6 @@ class CreateUserRequest {
       'Gender': gender, // Nuevo campo
       'State': state, // Nuevo campo
       'City': city, // Nuevo campo
-      'Town': town, // Nuevo campo
       'Country': country, // Nuevo campo
       'CustomerType': customerType, // Nuevo campo
     };
@@ -124,7 +120,7 @@ class Customer {
   String? mobile;
   String? addressLine1;
   String? addressLine2;
-  String? zipCode;
+  int? zipCode;
   String? photo;
   bool? status = true;
   String? emergencyContact;
@@ -184,13 +180,12 @@ class Customer {
       mobile: json['Mobile'] as String,
       addressLine1: json['AddressLine1'] as String,
       addressLine2: json['AddressLine2'] as String?,
-      zipCode: json['ZipCode'] as String,
+      zipCode: json['ZipCode']==null? null:json['ZipCode'] as int?,
       photo: json['Photo'] as String?,
       status: json['Status'] as bool,
       emergencyContact: json['EmergencyContact'] as String?,
       contactPhoneNumber: json['ContactPhoneNumber'] as String?,
       creadoDesdeMovil: json['CreadoDesdeMovil'] as bool,
-      town: json['Town'] == null ? null : Town.fromJson(json['Town']).idTown,
       city: json['City'] == null ? null : City.fromJson(json['City']).idCity,
       state: json['State'] == null
           ? null

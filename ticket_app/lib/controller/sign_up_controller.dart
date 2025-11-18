@@ -8,8 +8,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ticket_app/data/model/register.dart';
 import 'package:ticket_app/data/service/api_service.dart';
-import 'package:ticket_app/data/service/authentication_service.dart';
-import 'package:ticket_app/routes/app_pages.dart';
 import 'package:ticket_app/utils/Validators/user_register_validator.dart';
 
 class SignUpController extends GetxController with StateMixin {
@@ -45,25 +43,18 @@ class SignUpController extends GetxController with StateMixin {
   void onChangeState(String? p1) {
     userRegister.update((val) {
       val!.state = p1;
-      val.town = null;
       val.city = null;
     });
   }
 
-  void onChangeTown(int? p1) {
-    userRegister.update((val) {
-      val!.town = p1;
-    });
-  }
 
   void onChangeCity(int? p1) {
     userRegister.update((val) {
       val!.city = p1;
-      val.town = null;
     });
   }
 
-  onChangeZipCode(String p1) {
+  onChangeZipCode(int? p1) {
     userRegister.update((val) {
       val!.zipCode = p1;
     });

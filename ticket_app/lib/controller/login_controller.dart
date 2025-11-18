@@ -34,7 +34,7 @@ class LoginController extends GetxController with StateMixin {
           await Get.dialog(
             AlertDialog(
               title: const Text('Alert'),
-              content: const Text('Username/Password incorrect'),
+              content: const Text('Invalid credentials. Please check your username and password.'),
               actions: [
                 TextButton(
                   onPressed: () => Get.back(), // Cierra el diálogo

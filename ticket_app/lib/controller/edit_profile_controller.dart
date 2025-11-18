@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_app/data/model/customer.dart';
+import 'package:ticket_app/data/model/zipcode.dart';
 import 'package:ticket_app/data/service/api_service.dart';
 import 'package:ticket_app/data/service/authentication_service.dart';
 import 'package:ticket_app/data/service/session_service.dart';
@@ -237,7 +238,7 @@ class EditProfileController extends GetxController with StateMixin<Customer?> {
     });
   }
 
-  onChangeZipCode(String p1) {
+void  onChangeZipCode(int? p1) {
     customerRx!.update((val) {
       val!.zipCode = p1;
     });

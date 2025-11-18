@@ -8,13 +8,12 @@ import 'package:ticket_app/bindings/payment_controller_binding.dart';
 import 'package:ticket_app/bindings/reservation_binding.dart';
 import 'package:ticket_app/bindings/sign_up_binding.dart';
 import 'package:ticket_app/bindings/splash_binding.dart';
-import 'package:ticket_app/controller/home_controller.dart';
-import 'package:ticket_app/controller/splash_controller.dart';
 import 'package:ticket_app/ui/Authentication/forgot_password.dart';
 import 'package:ticket_app/ui/Authentication/sign_up_page.dart';
 import 'package:ticket_app/ui/Authentication/login_page.dart';
 import 'package:ticket_app/ui/bookings/payments/payment_success.dart';
-import 'package:ticket_app/ui/bookings/payments/payment_web.dart';
+import 'package:ticket_app/ui/bookings/payments/payment_stub.dart'
+  if (dart.library.html) 'package:ticket_app/ui/bookings/payments/payment_web.dart';
 import 'package:ticket_app/ui/home_page.dart';
 import 'package:ticket_app/ui/bookings/create_booking/create_booking_page.dart';
 import 'package:ticket_app/ui/bookings/my_bookings/booking_pdf_page.dart';

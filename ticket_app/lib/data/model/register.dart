@@ -10,8 +10,7 @@ class UserRegister {
   String? addressLine1;
   String? addressLine2;
   String? state;
-  int? town;
-  String? zipCode;
+  int? zipCode;
   DateTime? birthday;
   String? middleName;
   int? city;
@@ -36,7 +35,6 @@ class UserRegister {
       confirmPassword: userRegister.confirmPassword,
       password: userRegister.password,
       state: userRegister.state,
-      town: userRegister.town,
       gender: userRegister.gender,
       city: userRegister.city.toString(),
       creationDate: DateTime.now(),

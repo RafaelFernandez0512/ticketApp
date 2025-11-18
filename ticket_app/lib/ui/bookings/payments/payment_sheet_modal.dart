@@ -51,6 +51,7 @@ class PaymentSheetModal {
           icon: const Icon(Icons.error, color: Colors.white),
         ),
       );
+          EasyLoading.dismiss();
       return '';
     }
   }
@@ -82,6 +83,7 @@ class PaymentSheetModal {
       }
       return true;
     } on Exception catch (e) {
+        EasyLoading.dismiss();
       if (e is StripeException) {
         if (context.mounted) {
           scaffoldMessenger.showSnackBar(
